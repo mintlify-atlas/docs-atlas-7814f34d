@@ -1,0 +1,132 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "JS Beautify",
+  "projectDescription": "A JavaScript, CSS, and HTML code beautifier available as a Node.js library, CLI tool, Python package, and browser-based web library.",
+  "theme": "palm",
+  "primaryColor": "#fbc826",
+  "lightColor": "#04c754",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Getting Started",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Installation",
+            "pages": [
+              "installation/nodejs",
+              "installation/python",
+              "installation/web-browser"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Usage",
+        "groups": [
+          {
+            "group": "Using the CLI",
+            "pages": [
+              "usage/cli-javascript",
+              "usage/cli-css",
+              "usage/cli-html"
+            ]
+          },
+          {
+            "group": "Using as a Library",
+            "pages": [
+              "usage/node-library",
+              "usage/python-library",
+              "usage/web-library"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Configuration",
+        "groups": [
+          {
+            "group": "Options Reference",
+            "pages": [
+              "configuration/overview",
+              "configuration/javascript-options",
+              "configuration/css-options",
+              "configuration/html-options"
+            ]
+          },
+          {
+            "group": "Config Files",
+            "pages": [
+              "configuration/jsbeautifyrc",
+              "configuration/editorconfig",
+              "configuration/language-overrides"
+            ]
+          },
+          {
+            "group": "Directives",
+            "pages": [
+              "configuration/directives"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "JavaScript API",
+            "pages": [
+              "api/js-beautify",
+              "api/css-beautify",
+              "api/html-beautify"
+            ]
+          },
+          {
+            "group": "Python API",
+            "pages": [
+              "api/python-jsbeautifier",
+              "api/python-cssbeautifier"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Project",
+            "pages": [
+              "resources/changelog",
+              "resources/contributing",
+              "resources/license"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Beautify JavaScript, CSS, and HTML from CLI, Node.js library, Python library, or web browser",
+    "Highly configurable with dozens of options for indentation, brace style, line wrapping, and more",
+    "Supports .jsbeautifyrc config files and EditorConfig for project-level settings",
+    "Language-specific option overrides within a single config file",
+    "In-source directives to preserve or ignore specific code sections",
+    "Supports template languages including Django, ERB, Handlebars, PHP, Smarty, and Angular",
+    "Unpacks scripts packed by Dean Edwards' packer and partially deobfuscates obfuscated scripts",
+    "Available via npm, PyPI, and CDN"
+  ],
+  "publicApiSurface": [
+    "js_beautify(code, options) / beautify.js(code, options)",
+    "css_beautify(code, options) / beautify.css(code, options)",
+    "html_beautify(code, options) / beautify.html(code, options)",
+    "jsbeautifier.beautify(code) [Python]",
+    "jsbeautifier.beautify_file(path) [Python]",
+    "jsbeautifier.default_options() [Python]",
+    "cssbeautifier.beautify(code) [Python]",
+    "js-beautify CLI (js-beautify, css-beautify, html-beautify)"
+  ]
+}
