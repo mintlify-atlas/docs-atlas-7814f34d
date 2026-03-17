@@ -1,0 +1,404 @@
+---
+title: JavaScript options
+description: Complete reference for all js-beautify JavaScript formatting options, including defaults and accepted values.
+---
+
+These options control how the JavaScript beautifier formats code. Pass them via the CLI (using `--kebab-case` flags), as an options object in the Node.js API, or inside a `.jsbeautifyrc` file.
+
+## Indentation
+
+<AccordionGroup>
+  <Accordion title="indent_size" defaultOpen={false}>
+    **CLI:** `--indent-size`, `-s` &nbsp; **Default:** `4`
+
+    Number of spaces per indentation level. Ignored when `indent_with_tabs` is `true`.
+
+    ```javascript
+    // indent_size: 2
+    function greet(name) {
+      return 'Hello, ' + name;
+    }
+
+    // indent_size: 4
+    function greet(name) {
+        return 'Hello, ' + name;
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="indent_char" defaultOpen={false}>
+    **CLI:** `--indent-char`, `-c` &nbsp; **Default:** `" "` (space)
+
+    Character used for each level of indentation. Typically a space or a tab. Use `indent_with_tabs: true` instead of setting this to `"\t"` directly.
+  </Accordion>
+
+  <Accordion title="indent_with_tabs" defaultOpen={false}>
+    **CLI:** `--indent-with-tabs`, `-t` &nbsp; **Default:** `false`
+
+    When `true`, uses a tab character for indentation and overrides `indent_size` and `indent_char`.
+
+    ```javascript
+    // indent_with_tabs: true
+    function greet(name) {
+    \treturn 'Hello, ' + name;
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="indent_level" defaultOpen={false}>
+    **CLI:** `--indent-level`, `-l` &nbsp; **Default:** `0`
+
+    Starting indentation level. Useful when beautifying a code fragment that will be embedded inside already-indented content.
+  </Accordion>
+
+  <Accordion title="indent_empty_lines" defaultOpen={false}>
+    **CLI:** `--indent-empty-lines` &nbsp; **Default:** `false`
+
+    When `true`, empty lines retain their indentation whitespace instead of being stripped.
+  </Accordion>
+</AccordionGroup>
+
+## Line endings
+
+<AccordionGroup>
+  <Accordion title="eol" defaultOpen={false}>
+    **CLI:** `--eol`, `-e` &nbsp; **Default:** `"\n"`
+
+    Character sequence used for line endings. Common values: `"\n"` (LF), `"\r\n"` (CRLF). Defaults to the first newline character found in the file, or `"\n"` if none is found.
+  </Accordion>
+
+  <Accordion title="end_with_newline" defaultOpen={false}>
+    **CLI:** `--end-with-newline`, `-n` &nbsp; **Default:** `false`
+
+    When `true`, ensures the output ends with a single newline character.
+  </Accordion>
+</AccordionGroup>
+
+## Newline preservation
+
+<AccordionGroup>
+  <Accordion title="preserve_newlines" defaultOpen={false}>
+    **CLI:** `--preserve-newlines`, `-p` &nbsp; **Default:** `true`
+
+    When `true`, blank lines in the original source are kept in the output. Disable with `--no-preserve-newlines`.
+  </Accordion>
+
+  <Accordion title="max_preserve_newlines" defaultOpen={false}>
+    **CLI:** `--max-preserve-newlines`, `-m` &nbsp; **Default:** `10`
+
+    Maximum number of consecutive blank lines to keep in one block. Ignored when `preserve_newlines` is `false`.
+
+    ```javascript
+    // max_preserve_newlines: 1
+    // Collapses multiple blank lines into at most one
+    const a = 1;
+
+    const b = 2;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Spacing
+
+<AccordionGroup>
+  <Accordion title="space_in_paren" defaultOpen={false}>
+    **CLI:** `--space-in-paren`, `-P` &nbsp; **Default:** `false`
+
+    When `true`, adds a space inside parentheses for function calls and declarations.
+
+    ```javascript
+    // space_in_paren: false
+    foo(a, b);
+
+    // space_in_paren: true
+    foo( a, b );
+    ```
+  </Accordion>
+
+  <Accordion title="space_in_empty_paren" defaultOpen={false}>
+    **CLI:** `--space-in-empty-paren`, `-E` &nbsp; **Default:** `false`
+
+    When `true`, adds a single space inside empty parentheses.
+
+    ```javascript
+    // space_in_empty_paren: false
+    foo();
+
+    // space_in_empty_paren: true
+    foo( );
+    ```
+  </Accordion>
+
+  <Accordion title="space_after_anon_function" defaultOpen={false}>
+    **CLI:** `--space-after-anon-function`, `-a` &nbsp; **Default:** `false`
+
+    When `true`, adds a space between the `function` keyword and the opening parenthesis of anonymous functions.
+
+    ```javascript
+    // space_after_anon_function: false
+    var fn = function() {};
+
+    // space_after_anon_function: true
+    var fn = function () {};
+    ```
+
+    <Note>This option is automatically set to `true` when `jslint_happy` is enabled.</Note>
+  </Accordion>
+
+  <Accordion title="space_after_named_function" defaultOpen={false}>
+    **CLI:** `--space-after-named-function` &nbsp; **Default:** `false`
+
+    When `true`, adds a space between the `function` keyword and the opening parenthesis of named functions.
+
+    ```javascript
+    // space_after_named_function: false
+    function greet() {}
+
+    // space_after_named_function: true
+    function greet () {}
+    ```
+  </Accordion>
+
+  <Accordion title="space_before_conditional" defaultOpen={false}>
+    **Default:** `true` &nbsp; *(not available in CLI)*
+
+    When `true`, adds a space before the condition in `if`, `while`, and `for` statements.
+
+    ```javascript
+    // space_before_conditional: true
+    if (condition) {}
+
+    // space_before_conditional: false
+    if(condition) {}
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Brace style
+
+<Accordion title="brace_style" defaultOpen={false}>
+  **CLI:** `--brace-style`, `-b` &nbsp; **Default:** `"collapse"`
+
+  Controls where opening and closing braces are placed. Accepts one of the four base styles, optionally combined with the `preserve-inline` modifier using a comma.
+
+  | Value | Description |
+  |---|---|
+  | `collapse` | Opening brace on same line as control statement (default) |
+  | `expand` | Opening brace on its own line |
+  | `end-expand` | Opening brace on same line; closing brace on its own line |
+  | `none` | Leave brace style unchanged |
+  | `preserve-inline` | Modifier: keep single-line blocks on one line |
+
+  ```javascript
+  // brace_style: "collapse" (default)
+  if (x) {
+      foo();
+  } else {
+      bar();
+  }
+
+  // brace_style: "expand"
+  if (x)
+  {
+      foo();
+  }
+  else
+  {
+      bar();
+  }
+
+  // brace_style: "collapse,preserve-inline"
+  // Single-line blocks are left on one line
+  if (x) { foo(); } else { bar(); }
+  ```
+
+  <Tip>Combine a base style with `preserve-inline` using a comma: `"collapse,preserve-inline"`.</Tip>
+</Accordion>
+
+## Chained methods
+
+<AccordionGroup>
+  <Accordion title="unindent_chained_methods" defaultOpen={false}>
+    **CLI:** `--unindent-chained-methods`, `-u` &nbsp; **Default:** `false`
+
+    When `true`, chained method calls are not indented.
+
+    ```javascript
+    // unindent_chained_methods: false
+    promise
+        .then(fn)
+        .catch(err);
+
+    // unindent_chained_methods: true
+    promise
+    .then(fn)
+    .catch(err);
+    ```
+  </Accordion>
+
+  <Accordion title="break_chained_methods" defaultOpen={false}>
+    **CLI:** `--break-chained-methods`, `-B` &nbsp; **Default:** `false`
+
+    When `true`, each chained method call is placed on its own line.
+
+    ```javascript
+    // break_chained_methods: false
+    obj.method1().method2().method3();
+
+    // break_chained_methods: true
+    obj.method1()
+        .method2()
+        .method3();
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Arrays and commas
+
+<AccordionGroup>
+  <Accordion title="keep_array_indentation" defaultOpen={false}>
+    **CLI:** `--keep-array-indentation`, `-k` &nbsp; **Default:** `false`
+
+    When `true`, preserves the original indentation of array elements rather than reformatting them.
+
+    ```javascript
+    // keep_array_indentation: false
+    var arr = [
+        1,
+        2,
+        3
+    ];
+
+    // keep_array_indentation: true — original whitespace is preserved
+    var arr = [1,
+               2,
+               3];
+    ```
+  </Accordion>
+
+  <Accordion title="comma_first" defaultOpen={false}>
+    **CLI:** `--comma-first`, `-C` &nbsp; **Default:** `false`
+
+    When `true`, places commas at the beginning of a new line instead of at the end of the previous line.
+
+    ```javascript
+    // comma_first: false
+    var obj = {
+        a: 1,
+        b: 2,
+        c: 3
+    };
+
+    // comma_first: true
+    var obj = {
+        a: 1
+      , b: 2
+      , c: 3
+    };
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Line wrapping
+
+<Accordion title="wrap_line_length" defaultOpen={false}>
+  **CLI:** `--wrap-line-length`, `-w` &nbsp; **Default:** `0`
+
+  Maximum number of characters per line. When set to `0`, line wrapping is disabled. Lines longer than this value are broken where possible.
+</Accordion>
+
+## Operator position
+
+<Accordion title="operator_position" defaultOpen={false}>
+  **CLI:** `--operator-position`, `-O` &nbsp; **Default:** `"before-newline"`
+
+  Controls where binary operators are placed when a line is broken across two lines.
+
+  | Value | Description |
+  |---|---|
+  | `before-newline` | Operator stays at the end of the first line (default) |
+  | `after-newline` | Operator moves to the beginning of the next line |
+  | `preserve-newline` | Keep the operator wherever it appears in the source |
+
+  ```javascript
+  // operator_position: "before-newline" (default)
+  var result = a +
+      b;
+
+  // operator_position: "after-newline"
+  var result = a
+      + b;
+  ```
+</Accordion>
+
+## Strings
+
+<Accordion title="unescape_strings" defaultOpen={false}>
+  **CLI:** `--unescape-strings`, `-x` &nbsp; **Default:** `false`
+
+  When `true`, decodes printable characters that are encoded as `\xNN` escape sequences inside strings.
+
+  ```javascript
+  // unescape_strings: false
+  var s = "\x48ello";
+
+  // unescape_strings: true
+  var s = "Hello";
+  ```
+</Accordion>
+
+## JSLint compatibility
+
+<Accordion title="jslint_happy" defaultOpen={false}>
+  **CLI:** `--jslint-happy`, `-j` &nbsp; **Default:** `false`
+
+  When `true`, enables stricter JSLint-compatible formatting. This forces `space_after_anon_function` to `true`.
+
+  ```javascript
+  // jslint_happy: true
+  setTimeout(function () {
+      doSomething();
+  }, 1000);
+  ```
+</Accordion>
+
+## E4X
+
+<Accordion title="e4x" defaultOpen={false}>
+  **CLI:** `--e4x`, `-X` &nbsp; **Default:** `false`
+
+  When `true`, passes E4X XML literals through without reformatting them. E4X is a non-standard XML-in-JavaScript syntax historically supported by Mozilla.
+
+  ```javascript
+  // e4x: true — XML literal is left unchanged
+  var xml = <root><child>text</child></root>;
+  ```
+</Accordion>
+
+## Templating languages
+
+<Accordion title="templating" defaultOpen={false}>
+  **CLI:** `--templating` &nbsp; **Default:** `["auto"]`
+
+  List of templating languages whose syntax should be recognized and preserved when formatting JavaScript. Accepted values: `auto`, `none`, `angular`, `django`, `erb`, `handlebars`, `php`, `smarty`.
+
+  When set to `auto`, templating is disabled for JavaScript files (no templates are recognized). Pass multiple values as a comma-separated string on the CLI: `--templating django,erb`.
+
+  ```json
+  { "templating": ["handlebars", "erb"] }
+  ```
+</Accordion>
+
+## Miscellaneous
+
+<Accordion title="eval_code" defaultOpen={false}>
+  **Default:** `false` &nbsp; *(not available in CLI)*
+
+  When `true`, attempts to beautify code strings passed to `eval()`. This is an experimental feature and may not produce correct results in all cases.
+</Accordion>
+
+<Accordion title="editorconfig" defaultOpen={false}>
+  **CLI:** `--editorconfig` &nbsp; **Default:** `false`
+
+  When `true`, reads indentation and newline settings from the nearest `.editorconfig` file. See the [EditorConfig page](/configuration/editorconfig) for details on which properties are supported.
+</Accordion>

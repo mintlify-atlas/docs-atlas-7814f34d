@@ -1,0 +1,131 @@
+---
+title: Language overrides
+description: Override formatting options for specific languages (JS, CSS, HTML) or for embedded scripts and styles inside HTML.
+---
+
+The js-beautify configuration is a shallow tree. Top-level keys apply to all languages, but you can add language-specific subtrees to override individual options for JavaScript, CSS, or HTML files. This works when passing options directly to the API in either the Node.js or Python implementation. In the JavaScript implementation, it also works in `.jsbeautifyrc`.
+
+## Override keys
+
+The following keys are recognized as language override nodes:
+
+| Key | Applies to |
+|---|---|
+| `js` | JavaScript files |
+| `css` | CSS files |
+| `html` | HTML files |
+| `html.js` | JavaScript embedded inside HTML |
+| `html.css` | CSS embedded inside HTML |
+
+## How inheritance works
+
+Settings in a language override node are merged on top of the top-level settings. Each option you specify in the override node replaces the top-level value for that language. Options you do not specify are inherited from the top level.
+
+Consider this configuration:
+
+```json
+{
+    "indent_size": 4,
+    "html": {
+        "end_with_newline": true,
+        "js": {
+            "indent_size": 2
+        },
+        "css": {
+            "indent_size": 2
+        }
+    },
+    "css": {
+        "indent_size": 1
+    },
+    "js": {
+        "preserve_newlines": true
+    }
+}
+```
+
+This configuration has the following effect:
+
+- **JavaScript files** inherit `indent_size: 4` from the top level and have `preserve_newlines: true`.
+- **CSS files** override `indent_size` to `1`.
+- **HTML files** inherit `indent_size: 4` and add `end_with_newline: true`.
+- **JavaScript inside HTML** inherits the HTML `end_with_newline: true` and overrides `indent_size` to `2`.
+- **CSS inside HTML** inherits the HTML `end_with_newline: true` and overrides `indent_size` to `2`.
+
+<Note>
+Inheritance is shallow — only one level deep. The `html.js` node inherits from `html`, not from the top level directly.
+</Note>
+
+## Using overrides in a .jsbeautifyrc file
+
+```json .jsbeautifyrc
+{
+    "indent_size": 4,
+    "end_with_newline": false,
+    "js": {
+        "indent_size": 4,
+        "brace_style": "collapse,preserve-inline"
+    },
+    "css": {
+        "indent_size": 2,
+        "selector_separator_newline": true
+    },
+    "html": {
+        "indent_size": 2,
+        "wrap_line_length": 120,
+        "js": {
+            "indent_size": 2
+        },
+        "css": {
+            "indent_size": 2
+        }
+    }
+}
+```
+
+## Using overrides programmatically
+
+Pass the same nested structure directly to the API:
+
+<CodeGroup>
+
+```javascript Node.js
+const beautify = require('js-beautify');
+
+const options = {
+    indent_size: 4,
+    html: {
+        indent_size: 2,
+        wrap_line_length: 120,
+        js: { indent_size: 2 },
+        css: { indent_size: 2 }
+    },
+    css: {
+        indent_size: 2,
+        selector_separator_newline: true
+    }
+};
+
+// Each beautifier reads its own subtree automatically
+const js = beautify.js(jsCode, options);
+const css = beautify.css(cssCode, options);
+const html = beautify.html(htmlCode, options);
+```
+
+```python Python
+import jsbeautifier
+
+# Python does not support the nested override syntax directly.
+# Pass separate option objects for each language.
+opts = jsbeautifier.default_options()
+opts.indent_size = 4
+opts.brace_style = 'collapse'
+
+result = jsbeautifier.beautify(code, opts)
+```
+
+</CodeGroup>
+
+<Warning>
+The Python implementation does not support language override nodes. Pass separate options objects when formatting different file types in Python.
+</Warning>

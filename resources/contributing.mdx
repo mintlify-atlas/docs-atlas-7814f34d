@@ -1,0 +1,164 @@
+---
+title: Contributing
+description: How to report bugs, submit pull requests, set up a development environment, and follow the project's code standards.
+---
+
+<Note>
+  js-beautify is a popular project that **needs contributors**. Existing owners have limited time, and there are open issues across bug fixes and internal design improvements. If you're interested, look for issues tagged ["good first issue"](https://github.com/beautifier/js-beautify/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and submit a PR.
+</Note>
+
+## Reporting bugs
+
+If you find a bug, open an issue on [GitHub](https://github.com/beautifier/js-beautify/issues). Include:
+
+- Your environment (OS, Node.js or Python version, js-beautify version)
+- A clear description of the current behavior
+- What you believe the correct behavior should be
+- A minimal reproducible example if possible
+
+The more specific your description and examples, the more likely someone will be able to act on the report. The default issue template will guide you through this.
+
+We prefer you file an issue before a PR for new features, as this gives the team a chance to discuss design details. For bug fixes, feel free to dive straight in.
+
+## Development setup
+
+### Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **bash**
+- **make**
+- **Node.js** v16.x or greater (with npm)
+- **Python** v3.7 or greater (with pip)
+
+If you run into build issues, the project has a Gitter chat where contributors are happy to help.
+
+### Repository structure
+
+| Folder | Contents |
+|--------|----------|
+| `/js` | JavaScript implementations of the beautifiers |
+| `/python` | Python implementations of the beautifiers |
+| `/web` | Website source for https://beautifier.io/ |
+| `/test` | Test data files and support files for generating implementation-specific tests |
+
+The root folder holds cross-project tools, configuration, and some platform-specific files.
+
+## Building and testing locally
+
+This repository contains two mostly identical implementations: one in JavaScript and one in Python. The HTML beautifier is JavaScript-only.
+
+### JavaScript
+
+```bash
+# Build and run unit tests
+make js
+
+# Start a local dev server at http://localhost:8080
+make serve
+
+# Load a human-readable (debug) build
+# Open http://localhost:8080/?debug in a browser
+```
+
+### Python
+
+```bash
+# Build and run unit tests
+make py
+```
+
+### Both implementations
+
+```bash
+# Run style checks, generate tests, and run tests on both implementations
+make
+
+# Run style checks and tests for JavaScript only
+make jstest
+
+# Run style checks and tests for Python only
+make pytest
+
+# Run the full CI suite locally (run this before opening a PR)
+make ci
+```
+
+## Writing tests
+
+Tests live in `/test/data/*/test.js`. Add new test cases there when fixing a bug or adding a feature.
+
+Generated test files are checked in alongside changes to the test data files — **include all changed files in your commit**.
+
+## Code style requirements
+
+- Familiarize yourself with the existing folder structure and code style before making changes.
+- Run `make` with no parameters to verify style checks pass on both implementations before submitting.
+
+### Feature parity — required
+
+<Warning>
+  Any change made to one implementation **must** also be made to the other. This is a hard requirement. Every time an exception is made, the project becomes harder to maintain.
+
+  Both implementations are already very similar, and neither Python nor JavaScript are difficult to understand. If you get stuck porting a change, open a PR and discuss how to move forward — but do not submit changes to only one implementation.
+</Warning>
+
+The HTML beautifier is entirely JavaScript-only and is an example of what happens when parity is not maintained — there are still open issues from years ago for changes that were promised to be ported "in the next week or two".
+
+## Submitting a pull request
+
+<Steps>
+  <Step title="Run the CI suite locally">
+    Before creating your PR, run `make ci` after your commit. You may open a PR even if this reports errors, but the PR will not be merged until all errors are resolved.
+  </Step>
+  <Step title="Write a clear description">
+    Include a description of your changes. If applicable, include examples of input and expected output.
+  </Step>
+  <Step title="Ensure all checks pass">
+    Pull requests must pass build checks on all platforms before being merged. The project uses Travis CI and AppVeyor to run tests on Linux and Windows across multiple versions of Node.js and Python.
+  </Step>
+</Steps>
+
+## Updating documentation
+
+When making a change, update documentation as needed. This includes:
+
+- `README.md`
+- Internal command-line help text
+- File-level comments
+- Any tooling that depends on the change (for example, CDN URLs are updated automatically via scripts for new releases)
+
+## Branch and release structure
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Primary development branch |
+| `release` | Holds releases, including built files for Bower and the website |
+| `attic-*` | Archived branches, significantly out of date, kept for reference only |
+
+Each release has a tag created in the `release` branch when it is published. Python and Node.js version numbers are kept synchronized — publishing one means publishing the other.
+
+### Beta and release candidates
+
+To publish a beta or RC, append `-beta1` or `-rc1` to the version number, incrementing as needed.
+
+## Code of conduct
+
+This project follows the [Contributor Covenant](http://contributor-covenant.org/version/1/4/) Code of Conduct.
+
+**Expected behavior includes:**
+
+- Using welcoming and inclusive language
+- Being respectful of differing viewpoints and experiences
+- Gracefully accepting constructive criticism
+- Focusing on what is best for the community
+- Showing empathy towards other community members
+
+**Unacceptable behavior includes:**
+
+- Use of sexualized language or imagery, or unwelcome sexual attention or advances
+- Trolling, insulting or derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information without explicit permission
+
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the project team at **team@beautifier.io**. All complaints will be reviewed and investigated, and the team is obligated to maintain confidentiality with regard to the reporter.

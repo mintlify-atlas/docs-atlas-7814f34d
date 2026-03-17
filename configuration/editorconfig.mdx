@@ -1,0 +1,84 @@
+---
+title: EditorConfig
+description: Use an .editorconfig file to set indentation and line ending options for js-beautify automatically.
+---
+
+[EditorConfig](https://editorconfig.org) is a standard file format that many editors and tools read to enforce consistent coding style. js-beautify can read an `.editorconfig` file and apply matching settings automatically.
+
+<Note>
+EditorConfig support is available in the JavaScript (Node.js) implementation only. The Python implementation does not read `.editorconfig` files.
+</Note>
+
+## Enabling EditorConfig
+
+EditorConfig is off by default. Enable it with the `--editorconfig` CLI flag or by setting `editorconfig: true` in your options:
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    js-beautify --editorconfig foo.js
+    html-beautify --editorconfig index.html
+    ```
+  </Tab>
+  <Tab title="Node.js">
+    ```javascript
+    const beautify = require('js-beautify');
+
+    const result = beautify.js(code, {
+      editorconfig: true
+    });
+    ```
+  </Tab>
+  <Tab title=".jsbeautifyrc">
+    ```json
+    {
+      "editorconfig": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Supported EditorConfig properties
+
+js-beautify reads the following properties from `.editorconfig`:
+
+| EditorConfig property | Maps to js-beautify option | Notes |
+|---|---|---|
+| `indent_style` | `indent_with_tabs` | `tab` sets `indent_with_tabs: true`; `space` sets it to `false` |
+| `indent_size` | `indent_size` | Numeric indentation size |
+| `tab_width` | `indent_size` | Used when `indent_style = tab`; overrides `indent_size` |
+| `end_of_line` | `eol` | `lf` → `\n`, `crlf` → `\r\n`, `cr` → `\r` |
+| `insert_final_newline` | `end_with_newline` | `true` sets `end_with_newline: true` |
+
+Other EditorConfig properties such as `charset`, `trim_trailing_whitespace`, and `max_line_length` are not read by js-beautify.
+
+## Example .editorconfig
+
+```ini .editorconfig
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+
+[*.js]
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+```
+
+With the above file and `--editorconfig` enabled:
+- All files get 2-space indentation and LF line endings.
+- JavaScript files get 4-space indentation.
+- Makefiles use tab indentation.
+
+## Priority relative to other config sources
+
+EditorConfig has the lowest priority among all configuration sources. Any setting from `.jsbeautifyrc`, an environment variable, or a CLI flag will override the EditorConfig value for that option.
+
+```
+CLI flags  >  environment variables  >  .jsbeautifyrc  >  EditorConfig
+```

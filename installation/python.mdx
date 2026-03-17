@@ -1,0 +1,165 @@
+---
+title: "Python installation"
+description: "Install jsbeautifier and cssbeautifier via pip and use them as a library or CLI tool."
+---
+
+JS Beautify provides two Python packages:
+
+- **`jsbeautifier`** — beautifies JavaScript
+- **`cssbeautifier`** — beautifies CSS (depends on `jsbeautifier`)
+
+<Warning>
+  The Python packages can only beautify JavaScript and CSS. **HTML beautification is not supported** in the Python implementation. Use the Node.js package or the browser build for HTML.
+</Warning>
+
+## Supported Python versions
+
+The packages target Python 3. The `pyproject.toml` in the source repository lists `py33`, `py36`, `py37`, and `py38` as formatting targets, and the packages are tested against Python 3 on the project's CI pipeline.
+
+## Install jsbeautifier
+
+```bash
+pip install jsbeautifier
+```
+
+This installs the `jsbeautifier` library and a `js-beautify` command-line script.
+
+Verify the install:
+
+```bash
+js-beautify --version
+```
+
+## Install cssbeautifier
+
+`cssbeautifier` is a separate package that depends on `jsbeautifier`:
+
+```bash
+pip install cssbeautifier
+```
+
+This adds the `css-beautify` command-line script alongside `cssbeautifier` as an importable module.
+
+<Info>
+  Installing `cssbeautifier` will automatically install `jsbeautifier` as a dependency if it is not already present.
+</Info>
+
+## CLI usage
+
+After installing, you can run the CLI directly on files:
+
+```bash
+# Beautify a JavaScript file (output to stdout)
+js-beautify file.js
+
+# Write output back to the original file
+js-beautify --replace file.js
+
+# Beautify CSS
+css-beautify styles.css
+```
+
+## Library usage
+
+### Beautify JavaScript
+
+The simplest call passes a string of JavaScript and returns the reformatted code:
+
+```python
+import jsbeautifier
+
+result = jsbeautifier.beautify('function foo(){return 1;}')
+print(result)
+# function foo() {
+#     return 1;
+# }
+```
+
+To beautify a file directly:
+
+```python
+import jsbeautifier
+
+result = jsbeautifier.beautify_file('app.js')
+print(result)
+```
+
+### Specifying options
+
+Use `jsbeautifier.default_options()` to get an options object, then set properties on it before passing it to `beautify`:
+
+```python
+import jsbeautifier
+
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+opts.space_in_empty_paren = True
+opts.end_with_newline = True
+
+result = jsbeautifier.beautify('function foo(){return 1;}', opts)
+print(result)
+# function foo() {
+#   return 1;
+# }
+```
+
+Option names use underscores and match the CLI flag names (with dashes replaced by underscores). For example, `--indent-size 2` becomes `opts.indent_size = 2`.
+
+### Beautify CSS
+
+```python
+import cssbeautifier
+
+result = cssbeautifier.beautify('body{margin:0;padding:0;}.container{display:flex;}')
+print(result)
+# body {
+#     margin: 0;
+#     padding: 0;
+# }
+# .container {
+#     display: flex;
+# }
+```
+
+With options:
+
+```python
+import cssbeautifier
+
+opts = cssbeautifier.default_options()
+opts.indent_size = 2
+opts.newline_between_rules = True
+
+result = cssbeautifier.beautify('body{margin:0;}.container{display:flex;}', opts)
+print(result)
+```
+
+To beautify a CSS file from disk:
+
+```python
+import cssbeautifier
+
+result = cssbeautifier.beautify_file('styles.css')
+print(result)
+```
+
+## Differences from the JavaScript version
+
+| Feature | Python (`jsbeautifier`) | Node.js (`js-beautify`) |
+|---|---|---|
+| JavaScript beautification | Yes | Yes |
+| CSS beautification | Via `cssbeautifier` | Yes (`beautify.css`) |
+| HTML beautification | No | Yes (`beautify.html`) |
+| `.jsbeautifyrc` config file | No | Yes |
+| `jsbeautify_`-prefixed env vars | No | Yes |
+| EditorConfig integration | Yes | Yes |
+
+<Note>
+  The Python and JavaScript APIs are largely compatible — the option names are the same — but full API parity is an ongoing effort. A few options available in the JS version are not yet present in the Python version.
+</Note>
+
+## Next steps
+
+- [Python library usage](/usage/python-library) — detailed API reference
+- [CLI usage (JavaScript)](/usage/cli-javascript) — CLI flags reference (applies to both Python and Node.js CLIs)
+- [Configuration overview](/configuration/overview) — all formatting options

@@ -1,0 +1,256 @@
+---
+title: 'Python library'
+description: 'Use jsbeautifier and cssbeautifier as Python libraries to beautify JavaScript and CSS programmatically.'
+---
+
+Two separate Python packages cover JavaScript and CSS formatting:
+
+- **`jsbeautifier`** — reformats JavaScript
+- **`cssbeautifier`** — reformats CSS
+
+<Warning>
+The Python packages do not support HTML beautification. Use the [Node.js library](/usage/node-library) if you need to beautify HTML.
+</Warning>
+
+## Installation
+
+<CodeGroup>
+
+```bash JavaScript only
+pip install jsbeautifier
+```
+
+```bash CSS only
+pip install cssbeautifier
+```
+
+```bash Both
+pip install jsbeautifier cssbeautifier
+```
+
+</CodeGroup>
+
+## jsbeautifier
+
+### Basic usage
+
+```python
+import jsbeautifier
+
+# Beautify a string of JavaScript
+result = jsbeautifier.beautify('your JavaScript string')
+
+# Beautify a file and get the result as a string
+result = jsbeautifier.beautify_file('some_file.js')
+```
+
+Both functions return a string. They do not write to files — you handle output yourself.
+
+### Setting options
+
+Use `jsbeautifier.default_options()` to get an options object, set attributes on it, then pass it to `beautify` or `beautify_file`:
+
+```python
+import jsbeautifier
+
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+opts.space_in_empty_paren = True
+
+result = jsbeautifier.beautify('some JavaScript', opts)
+```
+
+Option names match the CLI flags with dashes replaced by underscores. For example, `--indent-size 2 --space-in-empty-paren` becomes:
+
+```python
+opts.indent_size = 2
+opts.space_in_empty_paren = True
+```
+
+### API reference
+
+<AccordionGroup>
+  <Accordion title="jsbeautifier.beautify(string, opts)">
+    Beautifies the given JavaScript string.
+
+    | Parameter | Type | Description |
+    |-----------|------|-------------|
+    | `string` | `str` | JavaScript source code to beautify. |
+    | `opts` | `BeautifierOptions` | Optional. Options object from `default_options()`. |
+
+    Returns a `str` containing the beautified code.
+
+    ```python
+    import jsbeautifier
+
+    result = jsbeautifier.beautify('function foo(){return 1;}')
+    print(result)
+    # function foo() {
+    #     return 1;
+    # }
+    ```
+  </Accordion>
+  <Accordion title="jsbeautifier.beautify_file(file_name, opts)">
+    Reads a file and returns the beautified content as a string.
+
+    | Parameter | Type | Description |
+    |-----------|------|-------------|
+    | `file_name` | `str` | Path to the JavaScript file, or `"-"` for stdin. |
+    | `opts` | `BeautifierOptions` | Optional. Options object from `default_options()`. |
+
+    Returns a `str` containing the beautified code.
+
+    ```python
+    import jsbeautifier
+
+    result = jsbeautifier.beautify_file('app.js')
+    with open('app.js', 'w') as f:
+        f.write(result)
+    ```
+  </Accordion>
+  <Accordion title="jsbeautifier.default_options()">
+    Returns a `BeautifierOptions` object pre-populated with all defaults.
+
+    ```python
+    import jsbeautifier
+
+    opts = jsbeautifier.default_options()
+    print(opts.indent_size)   # 4
+    print(opts.brace_style)   # 'collapse'
+    ```
+
+    Mutate the returned object to change individual settings before passing it to `beautify` or `beautify_file`.
+  </Accordion>
+</AccordionGroup>
+
+### Available options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `indent_size` | `4` | Number of spaces per indent level. |
+| `indent_char` | `" "` | Character used for indentation. |
+| `indent_with_tabs` | `False` | Indent with tabs instead of spaces. |
+| `eol` | `"\n"` | End-of-line character(s). |
+| `end_with_newline` | `False` | Ensure output ends with a newline. |
+| `preserve_newlines` | `True` | Preserve existing blank lines. |
+| `max_preserve_newlines` | `10` | Maximum blank lines to preserve in one chunk. |
+| `brace_style` | `"collapse"` | `collapse`, `expand`, `end-expand`, or `none`, optionally with `,preserve-inline`. |
+| `space_in_paren` | `False` | Add padding spaces inside parentheses: `f( a, b )`. |
+| `space_in_empty_paren` | `False` | Add a space inside empty parentheses: `f( )`. |
+| `jslint_happy` | `False` | Enable jslint-stricter mode. |
+| `space_after_anon_function` | `False` | Add a space before anonymous function parens. |
+| `space_after_named_function` | `False` | Add a space before named function parens. |
+| `keep_array_indentation` | `False` | Preserve array literal indentation. |
+| `unescape_strings` | `False` | Decode printable characters encoded in `\xNN` notation. |
+| `wrap_line_length` | `0` | Wrap lines exceeding this length (0 = disabled). |
+| `comma_first` | `False` | Put commas at the beginning of new lines. |
+| `operator_position` | `"before-newline"` | `before-newline`, `after-newline`, or `preserve-newline`. |
+| `indent_empty_lines` | `False` | Keep indentation on otherwise empty lines. |
+| `e4x` | `False` | Pass E4X XML literals through untouched. |
+| `eval_code` | `False` | Evaluate code if a JS interpreter is available (security risk). |
+| `templating` | `["auto"]` | Templating languages: `auto`, `django`, `erb`, `handlebars`, `php`, `smarty`, `angular`. |
+
+## cssbeautifier
+
+### Basic usage
+
+```python
+import cssbeautifier
+
+# Beautify a string of CSS
+result = cssbeautifier.beautify('div{color:red;font-size:14px;}')
+
+# Beautify a file and get the result as a string
+result = cssbeautifier.beautify_file('styles.css')
+```
+
+### Setting options
+
+```python
+import cssbeautifier
+
+opts = cssbeautifier.default_options()
+opts.indent_size = 2
+opts.end_with_newline = True
+
+result = cssbeautifier.beautify('div{color:red;font-size:14px;}', opts)
+print(result)
+# div {
+#   color: red;
+#   font-size: 14px;
+# }
+```
+
+### API reference
+
+<AccordionGroup>
+  <Accordion title="cssbeautifier.beautify(string, opts)">
+    Beautifies the given CSS string.
+
+    | Parameter | Type | Description |
+    |-----------|------|-------------|
+    | `string` | `str` | CSS source code to beautify. |
+    | `opts` | `BeautifierOptions` | Optional. Options object from `default_options()`. |
+
+    Returns a `str` containing the beautified CSS.
+  </Accordion>
+  <Accordion title="cssbeautifier.beautify_file(file_name, opts)">
+    Reads a file and returns the beautified CSS as a string.
+
+    | Parameter | Type | Description |
+    |-----------|------|-------------|
+    | `file_name` | `str` | Path to the CSS file, or `"-"` for stdin. |
+    | `opts` | `BeautifierOptions` | Optional. Options object from `default_options()`. |
+
+    Returns a `str` containing the beautified CSS.
+  </Accordion>
+  <Accordion title="cssbeautifier.default_options()">
+    Returns a `BeautifierOptions` object pre-populated with CSS-specific defaults.
+
+    ```python
+    import cssbeautifier
+
+    opts = cssbeautifier.default_options()
+    print(opts.indent_size)   # 4
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Available options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `indent_size` | `4` | Number of spaces per indent level. |
+| `indent_char` | `" "` | Character used for indentation. |
+| `indent_with_tabs` | `False` | Indent with tabs instead of spaces. |
+| `eol` | `"\n"` | End-of-line character(s). |
+| `end_with_newline` | `False` | Ensure output ends with a newline. |
+| `brace_style` | `"collapse"` | `collapse` or `expand`. |
+| `selector_separator_newline` | `True` | Add a newline between multiple selectors. |
+| `newline_between_rules` | `True` | Add a newline between CSS rules. |
+| `indent_empty_lines` | `False` | Keep indentation on otherwise empty lines. |
+
+## Practical example: beautify and overwrite a file
+
+```python
+import jsbeautifier
+import cssbeautifier
+
+def beautify_and_save(path):
+    if path.endswith('.js'):
+        opts = jsbeautifier.default_options()
+        opts.indent_size = 2
+        result = jsbeautifier.beautify_file(path, opts)
+    elif path.endswith('.css'):
+        opts = cssbeautifier.default_options()
+        opts.indent_size = 2
+        result = cssbeautifier.beautify_file(path, opts)
+    else:
+        raise ValueError('Unsupported file type: ' + path)
+
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(result)
+
+beautify_and_save('app.js')
+beautify_and_save('styles.css')
+```

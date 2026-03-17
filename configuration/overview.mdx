@@ -1,0 +1,121 @@
+---
+title: Configuration overview
+description: Learn how to configure js-beautify using CLI arguments, environment variables, .jsbeautifyrc files, and EditorConfig.
+---
+
+js-beautify can be configured through several mechanisms. When multiple sources provide the same option, the source with the highest priority wins.
+
+## Priority order
+
+```
+CLI arguments  >  environment variables  >  .jsbeautifyrc  >  EditorConfig
+```
+
+Sources listed earlier override sources listed later. For example, passing `--indent-size 2` on the command line overrides an `indent_size: 4` setting in `.jsbeautifyrc`.
+
+<Note>
+Environment variables, `.jsbeautifyrc`, and EditorConfig are supported in the JavaScript (Node.js) implementation only. The Python implementation reads CLI arguments and API options only.
+</Note>
+
+## Option naming convention
+
+The same option has different names depending on where it is used:
+
+| Context | Format | Example |
+|---|---|---|
+| CLI | kebab-case with `--` prefix | `--indent-size 2` |
+| Node.js API | snake_case | `indent_size: 2` |
+| Python API | snake_case | `opts.indent_size = 2` |
+| `.jsbeautifyrc` | snake_case | `"indent_size": 2` |
+| Environment variable | `jsbeautify_` prefix + snake_case | `jsbeautify_indent_size=2` |
+
+## Passing options via the CLI
+
+Pass options as flags when calling the beautifier from the terminal. Long-form flags use dashes.
+
+```bash
+# Format a JS file with 2-space indent and newline at end
+js-beautify --indent-size 2 --end-with-newline foo.js
+
+# Format CSS with tabs
+css-beautify --indent-with-tabs styles.css
+
+# Format HTML, wrapping lines at 120 characters
+html-beautify --wrap-line-length 120 index.html
+```
+
+You can also pipe from stdin:
+
+```bash
+cat foo.js | js-beautify -f -
+```
+
+## Passing options in Node.js
+
+When using js-beautify as a library, pass options as the second argument to the beautifier function. Use snake_case for all option names.
+
+<CodeGroup>
+
+```javascript CommonJS
+const beautify = require('js-beautify');
+
+const result = beautify.js(code, {
+  indent_size: 2,
+  brace_style: 'collapse,preserve-inline',
+  end_with_newline: true
+});
+
+const styledCss = beautify.css(cssCode, {
+  indent_size: 2,
+  newline_between_rules: true
+});
+
+const styledHtml = beautify.html(htmlCode, {
+  indent_size: 2,
+  wrap_line_length: 120
+});
+```
+
+```javascript ESM
+import beautify from 'js-beautify';
+
+const result = beautify.js(code, {
+  indent_size: 2,
+  brace_style: 'collapse,preserve-inline',
+  end_with_newline: true
+});
+```
+
+</CodeGroup>
+
+## Passing options in Python
+
+In Python, options are set on the options object returned by `jsbeautifier.default_options()`.
+
+```python
+import jsbeautifier
+
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+opts.brace_style = 'collapse'
+opts.end_with_newline = True
+
+result = jsbeautifier.beautify('var x={a:1};', opts)
+```
+
+## Configuration sources (JavaScript only)
+
+<CardGroup cols={2}>
+  <Card title=".jsbeautifyrc" icon="file" href="/configuration/jsbeautifyrc">
+    A JSON config file automatically discovered by walking up the directory tree from the current working directory.
+  </Card>
+  <Card title="EditorConfig" icon="sliders" href="/configuration/editorconfig">
+    Reads indentation and line ending settings from `.editorconfig` when the `--editorconfig` flag is set.
+  </Card>
+  <Card title="Language overrides" icon="code" href="/configuration/language-overrides">
+    Fine-tune settings per language (JS, CSS, HTML) or for embedded code inside HTML.
+  </Card>
+  <Card title="Environment variables" icon="terminal" href="/configuration/jsbeautifyrc#environment-variables">
+    Set any option with a `jsbeautify_`-prefixed environment variable.
+  </Card>
+</CardGroup>

@@ -1,0 +1,210 @@
+---
+title: 'jsbeautifier (Python)'
+description: 'Beautify JavaScript source code from Python using the jsbeautifier package.'
+---
+
+The `jsbeautifier` Python package provides the same JavaScript beautification capabilities as the Node.js library. It is installed separately from the CSS beautifier.
+
+<Note>
+  The Python package only beautifies JavaScript. For CSS, install and use the separate `cssbeautifier` package.
+</Note>
+
+## Installation
+
+```bash
+pip install jsbeautifier
+```
+
+## Functions
+
+### `beautify`
+
+```python
+jsbeautifier.beautify(code, opts=None) → str
+```
+
+Beautify a JavaScript string and return the result.
+
+<ParamField path="code" type="str" required>
+  The JavaScript source code to beautify.
+</ParamField>
+
+<ParamField path="opts" type="BeautifierOptions">
+  Options object created by `jsbeautifier.default_options()`. When `None`, default options are used.
+</ParamField>
+
+<ResponseField name="result" type="str" required>
+  The beautified JavaScript source code.
+</ResponseField>
+
+---
+
+### `beautify_file`
+
+```python
+jsbeautifier.beautify_file(file_name, opts=None) → str
+```
+
+Read a file and beautify its contents. Pass `"-"` as `file_name` to read from stdin.
+
+<ParamField path="file_name" type="str" required>
+  Path to the JavaScript file to read. Use `"-"` for stdin.
+</ParamField>
+
+<ParamField path="opts" type="BeautifierOptions">
+  Options object. When `None`, default options are used.
+</ParamField>
+
+<ResponseField name="result" type="str" required>
+  The beautified JavaScript source code.
+</ResponseField>
+
+---
+
+### `default_options`
+
+```python
+jsbeautifier.default_options() → BeautifierOptions
+```
+
+Return a `BeautifierOptions` instance populated with all default values. Modify attributes on the returned object before passing it to `beautify` or `beautify_file`.
+
+<ResponseField name="result" type="BeautifierOptions" required>
+  A new options object with all defaults set.
+</ResponseField>
+
+## Setting options
+
+```python
+import jsbeautifier
+
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+opts.brace_style = 'expand'
+opts.space_after_anon_function = True
+
+result = jsbeautifier.beautify('function foo(){return 42;}', opts)
+print(result)
+# function foo()
+# {
+#   return 42;
+# }
+```
+
+<Tip>
+  Option names mirror the CLI flag names with hyphens replaced by underscores. For example, `--indent-size` becomes `opts.indent_size`.
+</Tip>
+
+## BeautifierOptions reference
+
+`BeautifierOptions` inherits base options from the core `Options` class. All attributes are listed below.
+
+### Base options (inherited)
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `indent_size` | `int` | `4` | Spaces per indentation level. |
+| `indent_char` | `str` | `" "` | Character used for indentation. |
+| `indent_with_tabs` | `bool` | `False` | Indent with tabs. Overrides `indent_size` and `indent_char`. |
+| `indent_level` | `int` | `0` | Initial indentation level. |
+| `indent_empty_lines` | `bool` | `False` | Keep indentation on empty lines. |
+| `eol` | `str` | `"auto"` | Line terminator. `"auto"` detects from source. |
+| `end_with_newline` | `bool` | `False` | Append a newline at end of output. |
+| `preserve_newlines` | `bool` | `True` | Preserve existing blank lines. |
+| `max_preserve_newlines` | `int` | `32786` | Max consecutive blank lines to preserve. |
+| `wrap_line_length` | `int` | `0` | Wrap lines exceeding this length. `0` disables. |
+| `templating` | `list[str]` | `["auto"]` | Templating language(s) to recognise. |
+| `disabled` | `bool` | `False` | Return source unchanged. |
+| `editorconfig` | `bool` | `False` | Load settings from `.editorconfig`. |
+
+### JavaScript-specific options
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `brace_style` | `str` | `"collapse"` | Brace placement: `"collapse"`, `"expand"`, `"end-expand"`, or `"none"`. |
+| `brace_preserve_inline` | `bool` | `False` | Set by passing `",preserve-inline"` in `brace_style`. |
+| `space_in_paren` | `bool` | `False` | Pad spaces inside parentheses: `f( a, b )`. |
+| `space_in_empty_paren` | `bool` | `False` | Single space inside empty parens: `f( )`. |
+| `jslint_happy` | `bool` | `False` | jslint-stricter mode. Implies `space_after_anon_function`. |
+| `space_after_anon_function` | `bool` | `False` | Space before anonymous function parens: `function ()`. |
+| `space_after_named_function` | `bool` | `False` | Space before named function parens: `function foo ()`. |
+| `space_before_conditional` | `bool` | `True` | Space before conditional statements: `if (`. |
+| `break_chained_methods` | `bool` | `False` | Break chained method calls onto new lines. |
+| `unindent_chained_methods` | `bool` | `False` | Do not indent chained method calls. |
+| `keep_array_indentation` | `bool` | `False` | Preserve original array literal indentation. |
+| `unescape_strings` | `bool` | `False` | Decode `\xNN`-encoded printable characters in strings. |
+| `e4x` | `bool` | `False` | Pass E4X XML literals through untouched. |
+| `comma_first` | `bool` | `False` | Place commas at start of new lines. |
+| `operator_position` | `str` | `"before-newline"` | Operator placement at line breaks: `"before-newline"`, `"after-newline"`, `"preserve-newline"`. |
+| `eval_code` | `bool` | `False` | Evaluate code before beautifying (security risk). |
+
+## Usage examples
+
+<CodeGroup>
+
+```python basic
+import jsbeautifier
+
+result = jsbeautifier.beautify('function foo(){if(x){return 1;}}')
+print(result)
+# function foo() {
+#     if (x) {
+#         return 1;
+#     }
+# }
+```
+
+```python with options
+import jsbeautifier
+
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+opts.comma_first = True
+opts.operator_position = 'after-newline'
+
+result = jsbeautifier.beautify('var x=a+b+c;', opts)
+```
+
+```python from file
+import jsbeautifier
+
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+
+result = jsbeautifier.beautify_file('script.js', opts)
+print(result)
+```
+
+```python language-specific overrides via dict
+import jsbeautifier
+from jsbeautifier.javascript.options import BeautifierOptions
+
+# Pass a dict with nested language overrides
+opts = BeautifierOptions({
+    'indent_size': 4,
+    'js': {
+        'preserve_newlines': True,
+    }
+})
+result = jsbeautifier.beautify('var x=1;', opts)
+```
+
+</CodeGroup>
+
+## Inline directives
+
+Directives work the same as in the JavaScript API:
+
+```javascript
+var a = 1;
+/* beautify ignore:start */
+ {This is some strange{template language
+/* beautify ignore:end */
+
+/* beautify preserve:start */
+{
+    key:   'value',
+    other: 'entry'
+}
+/* beautify preserve:end */
+```

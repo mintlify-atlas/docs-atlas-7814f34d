@@ -1,0 +1,205 @@
+---
+title: 'css_beautify'
+description: 'Beautify CSS source code using the js-beautify library.'
+---
+
+The CSS beautifier reformats and re-indents CSS stylesheets, including support for selector grouping, rule spacing, and combinator formatting.
+
+## Function signature
+
+```javascript
+css_beautify(source, options) → string
+```
+
+## Import paths
+
+<Tabs>
+  <Tab title="CommonJS">
+    ```javascript
+    // Both are equivalent
+    const beautify_css = require('js-beautify').css;
+    const beautify_css = require('js-beautify').css_beautify;
+    ```
+  </Tab>
+  <Tab title="ESM">
+    ```javascript
+    import beautify from 'js-beautify';
+
+    beautify.css(source, options);
+    ```
+  </Tab>
+  <Tab title="Browser (CDN)">
+    ```html
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-css.min.js"></script>
+    <script>
+      const result = css_beautify(source, options);
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Parameters
+
+<ParamField path="source" type="string" required>
+  The CSS source code to beautify.
+</ParamField>
+
+<ParamField path="options" type="object">
+  Configuration options. All fields are optional.
+</ParamField>
+
+### Indentation options
+
+<ParamField path="options.indent_size" type="number" default="4">
+  Number of spaces per indentation level. Ignored when `indent_with_tabs` is `true`.
+</ParamField>
+
+<ParamField path="options.indent_char" type="string" default='" "'>
+  Character used for indentation.
+</ParamField>
+
+<ParamField path="options.indent_with_tabs" type="boolean" default="false">
+  Indent using tabs instead of spaces. Overrides `indent_size` and `indent_char`.
+</ParamField>
+
+<ParamField path="options.indent_empty_lines" type="boolean" default="false">
+  Preserve indentation on otherwise empty lines.
+</ParamField>
+
+### Newline and whitespace options
+
+<ParamField path="options.eol" type="string" default='"auto"'>
+  Line terminator character(s). `"auto"` uses the first newline found in the source, falling back to `"\n"`.
+</ParamField>
+
+<ParamField path="options.end_with_newline" type="boolean" default="false">
+  Ensure the output ends with a newline character.
+</ParamField>
+
+<ParamField path="options.preserve_newlines" type="boolean" default="false">
+  Preserve existing blank lines in the source.
+</ParamField>
+
+<ParamField path="options.wrap_line_length" type="number" default="0">
+  Wrap lines when they exceed this character count. `0` disables wrapping.
+</ParamField>
+
+### Selector and rule options
+
+<ParamField path="options.selector_separator_newline" type="boolean" default="true">
+  Print each selector in a grouped rule on its own line.
+
+  ```css
+  /* true */
+  h1,
+  h2 { color: red; }
+
+  /* false */
+  h1, h2 { color: red; }
+  ```
+</ParamField>
+
+<ParamField path="options.newline_between_rules" type="boolean" default="true">
+  Insert an empty line between CSS rules.
+</ParamField>
+
+<ParamField path="options.space_around_combinator" type="boolean" default="false">
+  Print spaces around combinators (e.g. `div > p` instead of `div>p`).
+</ParamField>
+
+### Brace options
+
+<ParamField path="options.brace_style" type="string" default='"collapse"'>
+  Controls placement of curly braces. Only `"collapse"` and `"expand"` are currently implemented:
+
+  - `"collapse"` — Opening brace on the same line as the selector.
+  - `"expand"` — Opening brace on its own line.
+</ParamField>
+
+### Miscellaneous options
+
+<ParamField path="options.disabled" type="boolean" default="false">
+  Return the source text unchanged.
+</ParamField>
+
+<ParamField path="options.editorconfig" type="boolean" default="false">
+  Load settings from an `.editorconfig` file found at or above the current working directory.
+</ParamField>
+
+## Return value
+
+<ResponseField name="result" type="string" required>
+  The beautified CSS source code.
+</ResponseField>
+
+## Usage examples
+
+<CodeGroup>
+
+```javascript basic usage
+const beautify_css = require('js-beautify').css;
+
+const ugly = 'body{margin:0;padding:0;}h1,h2{color:red;font-size:2em;}';
+const pretty = beautify_css(ugly, { indent_size: 2 });
+console.log(pretty);
+// body {
+//   margin: 0;
+//   padding: 0;
+// }
+//
+// h1,
+// h2 {
+//   color: red;
+//   font-size: 2em;
+// }
+```
+
+```javascript expand brace style
+const { css } = require('js-beautify');
+
+const result = css('.container{display:flex;}', {
+  brace_style: 'expand',
+  indent_size: 4,
+});
+// .container
+// {
+//     display: flex;
+// }
+```
+
+```javascript no newline between rules
+const { css } = require('js-beautify');
+
+const result = css('h1{color:red;}p{margin:0;}', {
+  newline_between_rules: false,
+  selector_separator_newline: false,
+});
+```
+
+```javascript ESM
+import beautify from 'js-beautify';
+
+const result = beautify.css('.btn { color: red; margin: 0 }', {
+  indent_size: 2,
+  end_with_newline: true,
+});
+```
+
+</CodeGroup>
+
+## Inline directives
+
+<Note>
+  The `ignore` directive is supported in CSS. The `preserve` directive is not supported in CSS.
+</Note>
+
+Use a comment directive to skip beautification for a block:
+
+```css
+.normal {
+  color: red;
+}
+/* beautify ignore:start */
+.ugly{color:blue;margin:0}
+/* beautify ignore:end */
+```

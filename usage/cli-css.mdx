@@ -1,0 +1,213 @@
+---
+title: 'CLI usage: CSS'
+description: 'Beautify CSS files from the command line using css-beautify or js-beautify --css.'
+---
+
+The `css-beautify` CLI reformats CSS files. It shares the same underlying tool as `js-beautify` — the two commands are equivalent:
+
+```bash
+css-beautify styles.css
+# same as:
+js-beautify --css styles.css
+```
+
+Output goes to stdout by default.
+
+## Installation
+
+```bash
+npm install -g js-beautify
+```
+
+Installing `js-beautify` globally provides both the `js-beautify` and `css-beautify` executables.
+
+## Basic usage
+
+```bash
+css-beautify styles.css
+```
+
+To write to a file:
+
+```bash
+css-beautify styles.css -o styles.out.css
+```
+
+To modify in-place:
+
+```bash
+css-beautify -r styles.css
+```
+
+## CLI flags reference
+
+### Control flags
+
+| Flag | Long form | Description |
+|------|-----------|-------------|
+| `-f` | `--file` | Input file(s). Pass `-` for stdin. |
+| `-r` | `--replace` | Write output in-place, replacing input. |
+| `-o` | `--outfile` | Write output to a specific file (default: stdout). |
+| | `--config` | Path to a config file. |
+| `-q` | `--quiet` | Suppress logging to stdout. |
+| `-h` | `--help` | Show help. |
+| `-v` | `--version` | Show the version. |
+
+### Indentation
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-s` | `--indent-size` | Number of spaces per indentation level. | `4` |
+| `-c` | `--indent-char` | Character used for indentation. | `" "` |
+| `-t` | `--indent-with-tabs` | Indent with tabs. Overrides `-s` and `-c`. | `false` |
+| | `--indent-empty-lines` | Keep indentation on empty lines. | `false` |
+
+### Line endings and newlines
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-e` | `--eol` | Line terminator character(s). | `\n` |
+| `-n` | `--end-with-newline` | End output with a newline. | `false` |
+
+### CSS-specific formatting
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-b` | `--brace-style` | Brace placement style: `collapse` or `expand`. | `collapse` |
+| `-L` | `--selector-separator-newline` | Add a newline between multiple selectors. | `false` |
+| `-N` | `--newline-between-rules` | Add a newline between CSS rules. | `false` |
+
+### Editor support
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| | `--editorconfig` | Read settings from an `.editorconfig` file. | `false` |
+| | `--templating` | Templating languages to preserve: `auto`, `none`, `angular`, `django`, `erb`, `handlebars`, `php`, `smarty`. | `auto` |
+
+## Practical examples
+
+<CodeGroup>
+
+```bash Beautify a file to stdout
+css-beautify styles.css
+```
+
+```bash Write to a new file
+css-beautify styles.css -o styles.formatted.css
+```
+
+```bash Modify in-place
+css-beautify -r styles.css
+```
+
+```bash 2-space indent, newline between rules
+css-beautify -s 2 -N styles.css
+```
+
+```bash Indent with tabs, separate selectors
+css-beautify -t -L styles.css
+```
+
+```bash Read from stdin
+cat styles.css | css-beautify -
+```
+
+```bash Use js-beautify alias
+js-beautify --css styles.css
+```
+
+</CodeGroup>
+
+## Brace styles
+
+<Tabs>
+  <Tab title="collapse (default)">
+    The closing brace sits on its own line after the last declaration. Opening braces stay on the selector line.
+
+    ```css
+    .selector {
+        color: red;
+        font-size: 14px;
+    }
+    ```
+  </Tab>
+  <Tab title="expand">
+    Both opening and closing braces appear on their own lines.
+
+    ```css
+    .selector
+    {
+        color: red;
+        font-size: 14px;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Selector and rule separation
+
+Use `-L` to place each selector on its own line when a rule has multiple selectors:
+
+```bash
+css-beautify -L styles.css
+```
+
+**Before:**
+```css
+h1, h2, h3 { color: red; }
+```
+
+**After:**
+```css
+h1,
+h2,
+h3 {
+    color: red;
+}
+```
+
+Use `-N` to insert a blank line between CSS rules:
+
+```bash
+css-beautify -N styles.css
+```
+
+**Before:**
+```css
+.foo {
+    color: red;
+}
+.bar {
+    color: blue;
+}
+```
+
+**After:**
+```css
+.foo {
+    color: red;
+}
+
+.bar {
+    color: blue;
+}
+```
+
+## Configuration
+
+CSS beautification respects the same configuration chain as the JS beautifier. Create a `.jsbeautifyrc` file and add a `css` section for CSS-specific settings:
+
+```json .jsbeautifyrc
+{
+    "indent_size": 4,
+    "css": {
+        "indent_size": 2,
+        "selector_separator_newline": true,
+        "newline_between_rules": true
+    }
+}
+```
+
+<Note>
+The `css-beautify` and `js-beautify --css` commands are identical. Both read from `.jsbeautifyrc` and support the same environment variable prefix `jsbeautify_`.
+</Note>

@@ -1,0 +1,283 @@
+---
+title: 'html_beautify'
+description: 'Beautify HTML source code using the js-beautify library.'
+---
+
+The HTML beautifier reformats and re-indents HTML markup. It also applies the JS and CSS beautifiers to inline `<script>` and `<style>` blocks.
+
+## Function signature
+
+```javascript
+html_beautify(source, options) → string
+```
+
+## Import paths
+
+<Tabs>
+  <Tab title="CommonJS">
+    ```javascript
+    // Both are equivalent
+    const beautify_html = require('js-beautify').html;
+    const beautify_html = require('js-beautify').html_beautify;
+    ```
+  </Tab>
+  <Tab title="ESM">
+    ```javascript
+    import beautify from 'js-beautify';
+
+    beautify.html(source, options);
+    ```
+  </Tab>
+  <Tab title="Browser (CDN)">
+    ```html
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-html.min.js"></script>
+    <script>
+      const result = html_beautify(source, options);
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  The HTML beautifier internally calls the JS and CSS beautifiers for embedded code. You can override those by passing custom beautifier functions as the third and fourth arguments to the low-level `style_html` function, but the public `html_beautify` wrapper handles this automatically.
+</Info>
+
+## Parameters
+
+<ParamField path="source" type="string" required>
+  The HTML source code to beautify.
+</ParamField>
+
+<ParamField path="options" type="object">
+  Configuration options. All fields are optional.
+</ParamField>
+
+### Indentation options
+
+<ParamField path="options.indent_size" type="number" default="4">
+  Number of spaces per indentation level. Ignored when `indent_with_tabs` is `true`.
+</ParamField>
+
+<ParamField path="options.indent_char" type="string" default='" "'>
+  Character used for indentation.
+</ParamField>
+
+<ParamField path="options.indent_with_tabs" type="boolean" default="false">
+  Indent using tabs instead of spaces. Overrides `indent_size` and `indent_char`.
+</ParamField>
+
+<ParamField path="options.indent_inner_html" type="boolean" default="false">
+  Indent the contents of `<head>` and `<body>` elements. When `false`, those two elements' direct children are not indented relative to the document root.
+</ParamField>
+
+<ParamField path="options.indent_body_inner_html" type="boolean" default="true">
+  Indent the contents of the `<body>` element. Overrides `indent_inner_html` for `<body>` specifically.
+</ParamField>
+
+<ParamField path="options.indent_head_inner_html" type="boolean" default="true">
+  Indent the contents of the `<head>` element. Overrides `indent_inner_html` for `<head>` specifically.
+</ParamField>
+
+<ParamField path="options.indent_empty_lines" type="boolean" default="false">
+  Preserve indentation on otherwise empty lines.
+</ParamField>
+
+### Script indentation options
+
+<ParamField path="options.indent_scripts" type="string" default='"normal"'>
+  Sets the indentation level applied to code inside `<script>` tags. One of:
+  - `"normal"` — Indent relative to the surrounding HTML.
+  - `"keep"` — Maintain the existing indentation of the script content.
+  - `"separate"` — Treat the script as a separate document starting at column 0.
+</ParamField>
+
+### Newline and whitespace options
+
+<ParamField path="options.eol" type="string" default='"auto"'>
+  Line terminator character(s). `"auto"` uses the first newline found in the source, falling back to `"\n"`.
+</ParamField>
+
+<ParamField path="options.end_with_newline" type="boolean" default="false">
+  Ensure the output ends with a newline character.
+</ParamField>
+
+<ParamField path="options.preserve_newlines" type="boolean" default="true">
+  Preserve existing blank lines in the source.
+</ParamField>
+
+<ParamField path="options.max_preserve_newlines" type="number" default="10">
+  Maximum number of consecutive blank lines to preserve. Requires `preserve_newlines` to be `true`.
+</ParamField>
+
+<ParamField path="options.wrap_line_length" type="number" default="250">
+  Wrap lines that exceed this character count. `0` disables wrapping.
+</ParamField>
+
+### Attribute wrapping options
+
+<ParamField path="options.wrap_attributes" type="string" default='"auto"'>
+  Controls how tag attributes are wrapped when they do not fit on one line. One of:
+  - `"auto"` — Wrap only when the line length limit is exceeded.
+  - `"force"` — Always wrap attributes after the first one.
+  - `"force-aligned"` — Wrap attributes and align them with the first attribute.
+  - `"force-expand-multiline"` — Each attribute on its own line, closing `>` on a new line.
+  - `"aligned-multiple"` — Multiple attributes per line, aligned.
+  - `"preserve"` — Preserve existing wrapping.
+  - `"preserve-aligned"` — Preserve wrapping and align attributes.
+</ParamField>
+
+<ParamField path="options.wrap_attributes_min_attrs" type="number" default="2">
+  Minimum number of attributes required to trigger forced wrapping when using a `force` mode.
+</ParamField>
+
+<ParamField path="options.wrap_attributes_indent_size" type="number" default="indent_size">
+  Number of spaces to indent wrapped attributes. Defaults to `indent_size`. Ignored when `wrap_attributes` is `"aligned"`.
+</ParamField>
+
+### Brace options
+
+<ParamField path="options.brace_style" type="string" default='"collapse"'>
+  Controls brace placement within embedded JavaScript. Accepts: `"collapse"`, `"expand"`, `"end-expand"`, `"none"`, or `"collapse-preserve-inline"`.
+</ParamField>
+
+### Tag handling options
+
+<ParamField path="options.inline" type="string[]">
+  List of tag names treated as inline elements. Defaults to the standard HTML inline element list (`a`, `abbr`, `b`, `span`, etc.).
+</ParamField>
+
+<ParamField path="options.inline_custom_elements" type="boolean" default="true">
+  Treat custom elements (e.g. `<my-component>`) as inline elements.
+</ParamField>
+
+<ParamField path="options.unformatted" type="string[]" default="[]">
+  List of tag names whose opening and closing tags, along with all content between them, are left completely unformatted.
+</ParamField>
+
+<ParamField path="options.content_unformatted" type="string[]" default='["pre", "textarea"]'>
+  List of tag names whose inner content is left unformatted, although the tags themselves are formatted.
+</ParamField>
+
+<ParamField path="options.unformatted_content_delimiter" type="string" default='""'>
+  Keep all text content together between occurrences of this string.
+</ParamField>
+
+<ParamField path="options.extra_liners" type="string[]" default='["head", "body", "/html"]'>
+  List of tag names that should have an extra blank line inserted before them.
+</ParamField>
+
+<ParamField path="options.void_elements" type="string[]">
+  List of void element tag names (self-closing tags). Defaults to the standard HTML void element list.
+</ParamField>
+
+<ParamField path="options.indent_handlebars" type="boolean" default="true">
+  Apply indentation inside Handlebars block helpers.
+</ParamField>
+
+### Templating options
+
+<ParamField path="options.templating" type="string[]" default='["auto"]'>
+  Templating languages whose syntax should be preserved. Accepted values: `"auto"`, `"none"`, `"angular"`, `"django"`, `"erb"`, `"handlebars"`, `"php"`, `"smarty"`.
+
+  `"auto"` enables all templating recognition for HTML (same as `["django", "erb", "handlebars", "php"]`).
+</ParamField>
+
+### Miscellaneous options
+
+<ParamField path="options.disabled" type="boolean" default="false">
+  Return the source text unchanged.
+</ParamField>
+
+<ParamField path="options.editorconfig" type="boolean" default="false">
+  Load settings from an `.editorconfig` file found at or above the current working directory.
+</ParamField>
+
+## Return value
+
+<ResponseField name="result" type="string" required>
+  The beautified HTML source code.
+</ResponseField>
+
+## Usage examples
+
+<CodeGroup>
+
+```javascript basic usage
+const beautify_html = require('js-beautify').html;
+
+const ugly = '<html><head><title>Test</title></head><body><p>Hello</p></body></html>';
+const pretty = beautify_html(ugly, { indent_size: 2 });
+console.log(pretty);
+// <html>
+//
+// <head>
+//   <title>Test</title>
+// </head>
+//
+// <body>
+//   <p>Hello</p>
+// </body>
+//
+// </html>
+```
+
+```javascript force attribute wrapping
+const { html } = require('js-beautify');
+
+const markup = '<input type="text" name="email" class="form-control" required>';
+const result = html(markup, {
+  wrap_attributes: 'force-expand-multiline',
+  indent_size: 2,
+});
+// <input
+//   type="text"
+//   name="email"
+//   class="form-control"
+//   required
+// >
+```
+
+```javascript inline scripts and styles
+const { html } = require('js-beautify');
+
+const markup = `<html><head><style>body{margin:0}</style></head>
+<body><script>function a(){return 1}</script></body></html>`;
+
+// Embedded JS and CSS are also beautified automatically
+const result = html(markup, { indent_size: 2 });
+```
+
+```javascript ESM
+import beautify from 'js-beautify';
+
+const result = beautify.html('<div><p>Hello</p></div>', {
+  indent_size: 2,
+  end_with_newline: true,
+});
+```
+
+</CodeGroup>
+
+## Inline directives
+
+Directives in HTML use HTML comment syntax.
+
+<AccordionGroup>
+  <Accordion title="ignore directive">
+    ```html
+    <div class="formatted">This is formatted.</div>
+    <!-- beautify ignore:start -->
+    <div class="raw"    >This is left as-is.</div>
+    <!-- beautify ignore:end -->
+    ```
+  </Accordion>
+  <Accordion title="preserve directive">
+    ```html
+    <!-- beautify preserve:start -->
+    <table>
+      <tr><td>A</td><td>B</td></tr>
+    </table>
+    <!-- beautify preserve:end -->
+    ```
+  </Accordion>
+</AccordionGroup>

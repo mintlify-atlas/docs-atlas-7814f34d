@@ -1,0 +1,91 @@
+---
+title: .jsbeautifyrc
+description: Configure js-beautify with a JSON config file that is automatically discovered by walking up the directory tree.
+---
+
+The `.jsbeautifyrc` file lets you store js-beautify settings in your project so that you do not need to pass flags on the command line every time.
+
+<Note>
+`.jsbeautifyrc` is supported by the JavaScript (Node.js) implementation only. The Python implementation does not read this file.
+</Note>
+
+## File format
+
+The file must contain valid JSON. All option names use snake_case (underscores, not dashes).
+
+```json .jsbeautifyrc
+{
+    "indent_size": 2,
+    "indent_char": " ",
+    "indent_level": 0,
+    "end_with_newline": true,
+    "indent_with_tabs": false,
+    "preserve_newlines": true,
+    "max_preserve_newlines": 10,
+    "jslint_happy": false,
+    "space_after_anon_function": false,
+    "brace_style": "collapse,preserve-inline",
+    "keep_array_indentation": false,
+    "space_before_conditional": true,
+    "break_chained_methods": false,
+    "eval_code": false,
+    "unescape_strings": false,
+    "wrap_line_length": 0,
+    "css": {
+        "selector_separator_newline": false
+    }
+}
+```
+
+This is the example config from the js-beautify repository. Notice how the `css` key provides language-specific overrides — see [Language overrides](/configuration/language-overrides) for details.
+
+## File discovery
+
+When you run `js-beautify` (or use the library without an explicit config path), it walks up the filesystem from the current working directory, looking for a `.jsbeautifyrc` file. It uses the first one it finds.
+
+```
+/home/user/project/src/   ← current directory
+/home/user/project/       ← looks here next (and may find .jsbeautifyrc)
+/home/user/               ← then here
+/home/                    ← then here
+/                         ← then root
+```
+
+This means a single `.jsbeautifyrc` at the root of your repository applies to all files in subdirectories.
+
+## Using a specific config file
+
+Pass `--config` to point to a config file at any path:
+
+```bash
+js-beautify --config path/to/myconfig.json foo.js
+```
+
+This overrides the automatic discovery mechanism.
+
+## Environment variables
+
+You can set any option by exporting an environment variable with the `jsbeautify_` prefix followed by the option name:
+
+```bash
+export jsbeautify_indent_size=2
+export jsbeautify_end_with_newline=true
+
+js-beautify foo.js
+```
+
+Environment variables override `.jsbeautifyrc` settings but are overridden by CLI flags.
+
+## Priority order
+
+When multiple sources define the same option, this is the order of precedence (highest to lowest):
+
+1. **CLI flags** — `--indent-size 2`
+2. **Environment variables** — `jsbeautify_indent_size=2`
+3. **`.jsbeautifyrc`** — `{ "indent_size": 2 }`
+4. **EditorConfig** — `indent_size = 2`
+5. **Built-in defaults**
+
+## Notes on key format
+
+The JSON parser normalizes keys by converting dashes to underscores, so `"end-with-newline"` and `"end_with_newline"` are treated identically. However, using underscores consistently is recommended.

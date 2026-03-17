@@ -1,0 +1,94 @@
+---
+title: Directives
+description: Use inline comments to tell js-beautify to ignore or preserve specific sections of your code.
+---
+
+Directives are special comments that you place inside your source files to control how js-beautify handles specific sections of code. Two directive types are available: `ignore` and `preserve`.
+
+## Directive format
+
+The format depends on the language:
+
+| Language | Format |
+|---|---|
+| JavaScript | `/* beautify {name}:{value} */` |
+| CSS | `/* beautify {name}:{value} */` |
+| HTML | `<!-- beautify {name}:{value} -->` |
+
+Directives always come in pairs: a `:start` comment and a matching `:end` comment.
+
+## ignore directive
+
+The `ignore` directive tells the beautifier to treat the enclosed content as literal text. The content is **not parsed at all** — it passes through exactly as written. Use this when the content is not valid syntax in the current language.
+
+### JavaScript and CSS
+
+```javascript
+var a = 1;
+/* beautify ignore:start */
+ {This is some strange{template language{using open-braces?
+/* beautify ignore:end */
+var b = 2;
+```
+
+The output is identical to the input — the strange template syntax between the directives is left completely untouched.
+
+### HTML
+
+```html
+<div class="content">
+<!-- beautify ignore:start -->
+  {{% raw template syntax that would confuse the parser %%}}
+<!-- beautify ignore:end -->
+</div>
+```
+
+## preserve directive
+
+The `preserve` directive tells the beautifier to parse the enclosed content as normal, but then keep the **existing formatting** instead of applying the beautifier's output. Use this when the content is valid syntax but you want to maintain specific manual formatting.
+
+<Note>
+The `preserve` directive works in JavaScript and HTML only. It is **not supported in CSS**.
+</Note>
+
+### JavaScript
+
+```javascript
+// Use preserve when the content is valid JavaScript but you want to
+// keep the existing alignment.
+/* beautify preserve:start */
+{
+    browserName: 'internet explorer',
+    platform:    'Windows 7',
+    version:     '8'
+}
+/* beautify preserve:end */
+```
+
+The aligned values in the object literal are preserved as-is. Without the directive, the beautifier would normalize the spacing.
+
+### HTML
+
+```html
+<table>
+<!-- beautify preserve:start -->
+  <tr><td>Row 1, Col 1</td><td>Row 1, Col 2</td></tr>
+  <tr><td>Row 2, Col 1</td><td>Row 2, Col 2</td></tr>
+<!-- beautify preserve:end -->
+</table>
+```
+
+## Choosing between ignore and preserve
+
+| | `ignore` | `preserve` |
+|---|---|---|
+| Content is parsed | No | Yes |
+| Existing formatting kept | Yes (verbatim) | Yes (parsed then restored) |
+| Works in JavaScript | Yes | Yes |
+| Works in CSS | Yes | No |
+| Works in HTML | Yes | Yes |
+| Use when | Content is not valid syntax | Content is valid syntax with intentional formatting |
+
+<Tip>
+Use `ignore` when the enclosed content would cause a parse error (such as template tags or non-standard syntax). Use `preserve` when the content is valid code that you have formatted intentionally and do not want the beautifier to change.
+</Tip>

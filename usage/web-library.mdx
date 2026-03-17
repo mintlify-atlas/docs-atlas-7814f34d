@@ -1,0 +1,172 @@
+---
+title: 'Web / browser library'
+description: 'Use js-beautify as a browser library to beautify JavaScript, CSS, and HTML directly on a web page.'
+---
+
+js-beautify ships pre-built browser bundles hosted on CDN. Load them with `<script>` tags and three global functions become available: `js_beautify`, `css_beautify`, and `html_beautify`.
+
+## Loading the scripts
+
+The library is split into three files — one per language. Load only the ones you need.
+
+```html
+<!-- JavaScript beautifier -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify.min.js"></script>
+
+<!-- CSS beautifier -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-css.min.js"></script>
+
+<!-- HTML beautifier (requires the JS and CSS scripts above) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-html.min.js"></script>
+```
+
+<Tip>
+Unminified versions (`beautify.js`, `beautify-css.js`, `beautify-html.js`) are also available on CDNJS if you need readable source for debugging. Change the version number in the URL to use an older release.
+</Tip>
+
+## Global functions
+
+After loading the scripts, three functions are available on `window`:
+
+| Function | Script file | Description |
+|----------|-------------|-------------|
+| `js_beautify(code, opts)` | `beautify.min.js` | Beautifies JavaScript (and JSON). |
+| `css_beautify(code, opts)` | `beautify-css.min.js` | Beautifies CSS. |
+| `html_beautify(code, opts)` | `beautify-html.min.js` | Beautifies HTML. |
+
+All three accept the source string as the first argument and an optional options object as the second. They return the beautified string.
+
+## Basic usage
+
+```javascript
+// Beautify JavaScript
+var prettyJS = js_beautify('function foo(){return 1;}', { indent_size: 2 });
+
+// Beautify CSS
+var prettyCSS = css_beautify('div{color:red;font-size:14px;}', { indent_size: 2 });
+
+// Beautify HTML
+var prettyHTML = html_beautify('<div><p>Hello</p></div>', { indent_size: 2 });
+```
+
+## Beautifying JSON
+
+`js_beautify` formats JSON strings as well as JavaScript. Pass the output of `JSON.stringify` directly:
+
+```javascript
+var options = { indent_size: 2, space_in_empty_paren: true };
+
+var dataObj = { completed: false, id: 1, title: 'delectus aut autem', userId: 1 };
+var dataJson = JSON.stringify(dataObj);
+
+var pretty = js_beautify(dataJson, options);
+console.log(pretty);
+// {
+//   "completed": false,
+//   "id": 1,
+//   "title": "delectus aut autem",
+//   "userId": 1,
+// }
+```
+
+## Complete HTML page example
+
+The following is a self-contained page with a textarea and a button that beautifies the entered code:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JS Beautify demo</title>
+</head>
+<body>
+  <h1>Beautify code</h1>
+
+  <label for="lang">Language:</label>
+  <select id="lang">
+    <option value="js">JavaScript / JSON</option>
+    <option value="css">CSS</option>
+    <option value="html">HTML</option>
+  </select>
+
+  <br /><br />
+
+  <textarea id="source" rows="10" cols="60"
+    placeholder="Paste your code here…"></textarea>
+
+  <br />
+  <button onclick="doBeautify()">Beautify</button>
+  <br /><br />
+
+  <pre id="output"></pre>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-html.min.js"></script>
+
+  <script>
+    var opts = { indent_size: 2 };
+
+    function doBeautify() {
+      var code = document.getElementById('source').value;
+      var lang = document.getElementById('lang').value;
+      var result;
+
+      if (lang === 'css') {
+        result = css_beautify(code, opts);
+      } else if (lang === 'html') {
+        result = html_beautify(code, opts);
+      } else {
+        result = js_beautify(code, opts);
+      }
+
+      document.getElementById('output').textContent = result;
+    }
+  </script>
+</body>
+</html>
+```
+
+## Options
+
+All option keys use underscores. The same options available in the Node.js library apply in the browser.
+
+```javascript
+var opts = {
+  indent_size: 2,          // Spaces per indent level (default 4)
+  indent_char: ' ',        // Character used for indentation
+  indent_with_tabs: false, // Use tabs instead of spaces
+  end_with_newline: true,  // End output with a newline
+  preserve_newlines: true, // Preserve existing blank lines
+  brace_style: 'collapse', // 'collapse', 'expand', 'end-expand', or 'none'
+  wrap_line_length: 0      // Wrap lines longer than N chars (0 = disabled)
+};
+
+var pretty = js_beautify(source, opts);
+```
+
+See the [Node.js library options tables](/usage/node-library#options) for the full list of available options per language.
+
+## AMD / RequireJS
+
+The browser bundles support AMD. If a `define` function with `define.amd` is present on the page, the scripts register themselves as AMD modules instead of setting globals:
+
+```javascript
+require(
+  [
+    'path/to/beautify',
+    'path/to/beautify-css',
+    'path/to/beautify-html'
+  ],
+  function(jsBeautify, cssBeautify, htmlBeautify) {
+    var prettyJS  = jsBeautify.js_beautify('function foo(){return 1;}', { indent_size: 2 });
+    var prettyCSS = cssBeautify.css_beautify('div{color:red;}', { indent_size: 2 });
+    var prettyHTML = htmlBeautify.html_beautify('<div><p>Hi</p></div>', { indent_size: 2 });
+  }
+);
+```
+
+<Note>
+When loaded via AMD the global `js_beautify`, `css_beautify`, and `html_beautify` functions are **not** set. All access goes through the module values passed to your callback.
+</Note>

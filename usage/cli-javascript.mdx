@@ -1,0 +1,319 @@
+---
+title: 'CLI usage: JavaScript'
+description: 'Beautify JavaScript files from the command line using js-beautify.'
+---
+
+The `js-beautify` CLI reformats and re-indents JavaScript files. Output goes to stdout by default unless you redirect it with `-o` or `-r`.
+
+## Installation
+
+```bash
+npm install -g js-beautify
+```
+
+After installing globally, the `js-beautify` executable is available on your PATH.
+
+## Basic usage
+
+```bash
+js-beautify foo.js
+```
+
+Beautified output is written to stdout. To write to a file, use `-o`:
+
+```bash
+js-beautify foo.js -o foo.out.js
+```
+
+To modify the file in-place, use `-r`:
+
+```bash
+js-beautify -r foo.js
+```
+
+## Reading from stdin
+
+Pass `-` as the filename to read from stdin:
+
+```bash
+cat foo.js | js-beautify -
+```
+
+You can combine stdin with an output file:
+
+```bash
+cat foo.js | js-beautify - -o foo.out.js
+```
+
+## Processing multiple files
+
+Pass multiple files as arguments. When more than one file is given, `-r` (in-place) is applied automatically:
+
+```bash
+js-beautify file1.js file2.js file3.js
+```
+
+Glob patterns are also supported:
+
+```bash
+js-beautify "src/**/*.js"
+```
+
+<Note>
+When a glob pattern matches multiple files or you pass more than one filename, js-beautify writes output in-place automatically — equivalent to passing `-r`.
+</Note>
+
+## CLI flags reference
+
+### Control flags
+
+| Flag | Long form | Description |
+|------|-----------|-------------|
+| `-f` | `--file` | Input file(s). Pass `-` for stdin. |
+| `-r` | `--replace` | Write output in-place, replacing input. |
+| `-o` | `--outfile` | Write output to a specific file (default: stdout). |
+| | `--config` | Path to a config file. |
+| | `--type` | Select beautifier type: `js`, `css`, or `html`. Default: `js`. Does not filter files. |
+| `-q` | `--quiet` | Suppress logging to stdout. |
+| `-h` | `--help` | Show help. |
+| `-v` | `--version` | Show the version. |
+
+### Indentation
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-s` | `--indent-size` | Number of spaces per indentation level. | `4` |
+| `-c` | `--indent-char` | Character used for indentation. | `" "` |
+| `-t` | `--indent-with-tabs` | Indent with tabs. Overrides `-s` and `-c`. | `false` |
+| `-l` | `--indent-level` | Initial indentation level. | `0` |
+| | `--indent-empty-lines` | Keep indentation on empty lines. | `false` |
+
+### Line endings and newlines
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-e` | `--eol` | Line terminator character(s). | First newline in file, otherwise `\n` |
+| `-n` | `--end-with-newline` | End output with a newline. | `false` |
+| `-p` | `--preserve-newlines` | Preserve existing line breaks. Use `--no-preserve-newlines` to disable. | `true` |
+| `-m` | `--max-preserve-newlines` | Maximum number of line breaks to preserve in one chunk. | `10` |
+
+### Spacing
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-P` | `--space-in-paren` | Add padding spaces inside parentheses, e.g. `f( a, b )`. | `false` |
+| `-E` | `--space-in-empty-paren` | Add a single space inside empty parentheses, e.g. `f( )`. | `false` |
+| `-a` | `--space-after-anon-function` | Add a space before an anonymous function's parentheses, e.g. `function ()`. | `false` |
+| | `--space-after-named-function` | Add a space before a named function's parentheses, e.g. `function example ()`. | `false` |
+
+### Braces and operators
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-b` | `--brace-style` | Brace placement style. Values: `collapse`, `expand`, `end-expand`, `none`. Append `,preserve-inline` for inline preservation. | `collapse,preserve-inline` |
+| `-C` | `--comma-first` | Place commas at the beginning of new lines instead of the end. | `false` |
+| `-O` | `--operator-position` | Operator position around newlines: `before-newline`, `after-newline`, `preserve-newline`. | `before-newline` |
+
+### Method chaining
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-u` | `--unindent-chained-methods` | Do not indent chained method calls. | `false` |
+| `-B` | `--break-chained-methods` | Break chained method calls across subsequent lines. | `false` |
+
+### Arrays, strings, and other JS-specific
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-k` | `--keep-array-indentation` | Preserve array indentation. | `false` |
+| `-x` | `--unescape-strings` | Decode printable characters encoded in `xNN` notation. | `false` |
+| `-w` | `--wrap-line-length` | Wrap lines exceeding N characters. `0` disables. | `0` |
+| `-X` | `--e4x` | Pass E4X XML literals through untouched. | `false` |
+| `-j` | `--jslint-happy` | Enable jslint-stricter mode. | `false` |
+| | `--good-stuff` | Enables `--keep-array-indentation` and `--jslint-happy` together. | — |
+
+### Editor and template support
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| | `--editorconfig` | Read settings from an `.editorconfig` file. | `false` |
+| | `--templating` | Templating languages to preserve: `auto`, `none`, `angular`, `django`, `erb`, `handlebars`, `php`, `smarty`. | `auto` (= none in JS) |
+
+## Configuration
+
+js-beautify loads configuration from multiple sources. Sources listed earlier take precedence over later ones:
+
+<Steps>
+  <Step title="CLI arguments">
+    Flags passed directly on the command line.
+  </Step>
+  <Step title="Environment variables">
+    Any variable prefixed with `jsbeautify_`. For example, `jsbeautify_indent_size=2`.
+  </Step>
+  <Step title="--config file">
+    A JSON file at the path passed to `--config`.
+  </Step>
+  <Step title=".jsbeautifyrc (project)">
+    A `.jsbeautifyrc` JSON file searched recursively from the current directory upward.
+  </Step>
+  <Step title=".jsbeautifyrc (home)">
+    A `.jsbeautifyrc` file in your home directory.
+  </Step>
+  <Step title="Built-in defaults">
+    The default values bundled with js-beautify.
+  </Step>
+</Steps>
+
+### Using a config file
+
+Create a `.jsbeautifyrc` file in your project root:
+
+```json .jsbeautifyrc
+{
+    "indent_size": 2,
+    "indent_char": " ",
+    "preserve_newlines": true,
+    "brace_style": "collapse",
+    "end_with_newline": true
+}
+```
+
+Or pass a config file explicitly:
+
+```bash
+js-beautify --config ./.beautify.json foo.js
+```
+
+### Language-specific overrides
+
+You can scope settings to a specific language inside the config file:
+
+```json .jsbeautifyrc
+{
+    "indent_size": 4,
+    "js": {
+        "preserve_newlines": true
+    },
+    "css": {
+        "indent_size": 2
+    },
+    "html": {
+        "end_with_newline": true,
+        "js": {
+            "indent_size": 2
+        }
+    }
+}
+```
+
+### Environment variables
+
+Prefix any option name with `jsbeautify_` to set it as an environment variable:
+
+```bash
+export jsbeautify_indent_size=2
+export jsbeautify_brace_style=expand
+js-beautify foo.js
+```
+
+<Tip>
+Environment variables override `.jsbeautifyrc` files but are overridden by CLI flags.
+</Tip>
+
+## Practical examples
+
+<CodeGroup>
+
+```bash Beautify a file to stdout
+js-beautify app.js
+```
+
+```bash Write to a new file
+js-beautify app.js -o app.formatted.js
+```
+
+```bash Modify a file in-place
+js-beautify -r app.js
+```
+
+```bash Beautify all JS files in src/
+js-beautify "src/**/*.js"
+```
+
+```bash Read from stdin
+cat app.js | js-beautify -
+```
+
+```bash 2-space indent, expand braces, end with newline
+js-beautify -s 2 -b expand -n app.js
+```
+
+```bash Use tabs, wrap at 100 chars
+js-beautify -t -w 100 app.js
+```
+
+```bash Use a custom config file
+js-beautify --config ./config/beautify.json app.js
+```
+
+```bash Use EditorConfig settings
+js-beautify --editorconfig app.js
+```
+
+</CodeGroup>
+
+## Brace styles
+
+<AccordionGroup>
+  <Accordion title="collapse (default)">
+    Opening braces are on the same line as the control statement. This is the default.
+
+    ```javascript
+    if (x) {
+        foo();
+    } else {
+        bar();
+    }
+    ```
+  </Accordion>
+  <Accordion title="expand">
+    Opening braces appear on their own line.
+
+    ```javascript
+    if (x)
+    {
+        foo();
+    }
+    else
+    {
+        bar();
+    }
+    ```
+  </Accordion>
+  <Accordion title="end-expand">
+    Closing braces appear on their own line.
+
+    ```javascript
+    if (x) {
+        foo();
+        }
+    else {
+        bar();
+        }
+    ```
+  </Accordion>
+  <Accordion title="none">
+    No brace manipulation.
+
+    ```javascript
+    if (x) { foo(); }
+    ```
+  </Accordion>
+  <Accordion title="collapse,preserve-inline">
+    Uses collapse style but preserves inline blocks.
+
+    ```javascript
+    if (x) { foo(); } else { bar(); }
+    ```
+  </Accordion>
+</AccordionGroup>

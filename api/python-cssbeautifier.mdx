@@ -1,0 +1,206 @@
+---
+title: 'cssbeautifier (Python)'
+description: 'Beautify CSS source code from Python using the cssbeautifier package.'
+---
+
+The `cssbeautifier` package is a Python CSS beautifier distributed separately from `jsbeautifier`. It shares the same base options infrastructure but is focused entirely on CSS.
+
+## Installation
+
+```bash
+pip install cssbeautifier
+```
+
+<Warning>
+  `cssbeautifier` is a separate pip package from `jsbeautifier`. You must install it explicitly even if `jsbeautifier` is already installed.
+</Warning>
+
+## Functions
+
+### `beautify`
+
+```python
+cssbeautifier.beautify(code, opts=None) → str
+```
+
+Beautify a CSS string and return the result.
+
+<ParamField path="code" type="str" required>
+  The CSS source code to beautify.
+</ParamField>
+
+<ParamField path="opts" type="BeautifierOptions">
+  Options object created by `cssbeautifier.default_options()`. When `None`, default options are used.
+</ParamField>
+
+<ResponseField name="result" type="str" required>
+  The beautified CSS source code.
+</ResponseField>
+
+---
+
+### `beautify_file`
+
+```python
+cssbeautifier.beautify_file(file_name, opts=None) → str
+```
+
+Read a file and beautify its contents. Pass `"-"` as `file_name` to read from stdin.
+
+<ParamField path="file_name" type="str" required>
+  Path to the CSS file to read. Use `"-"` for stdin.
+</ParamField>
+
+<ParamField path="opts" type="BeautifierOptions">
+  Options object. When `None`, default options are used.
+</ParamField>
+
+<ResponseField name="result" type="str" required>
+  The beautified CSS source code.
+</ResponseField>
+
+---
+
+### `default_options`
+
+```python
+cssbeautifier.default_options() → BeautifierOptions
+```
+
+Return a `BeautifierOptions` instance populated with all default values.
+
+<ResponseField name="result" type="BeautifierOptions" required>
+  A new CSS options object with all defaults set.
+</ResponseField>
+
+## Setting options
+
+```python
+import cssbeautifier
+
+opts = cssbeautifier.default_options()
+opts.indent_size = 2
+opts.newline_between_rules = False
+opts.selector_separator_newline = False
+
+result = cssbeautifier.beautify('h1,h2{color:red;margin:0}', opts)
+print(result)
+# h1, h2 {
+#   color: red;
+#   margin: 0;
+# }
+```
+
+## BeautifierOptions reference
+
+`BeautifierOptions` inherits base options from the jsbeautifier core `Options` class.
+
+### Base options (inherited)
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `indent_size` | `int` | `4` | Spaces per indentation level. |
+| `indent_char` | `str` | `" "` | Character used for indentation. |
+| `indent_with_tabs` | `bool` | `False` | Indent with tabs. Overrides `indent_size` and `indent_char`. |
+| `indent_level` | `int` | `0` | Initial indentation level. |
+| `indent_empty_lines` | `bool` | `False` | Keep indentation on empty lines. |
+| `eol` | `str` | `"auto"` | Line terminator. `"auto"` detects from source. |
+| `end_with_newline` | `bool` | `False` | Append a newline at end of output. |
+| `preserve_newlines` | `bool` | `False` | Preserve existing blank lines. |
+| `wrap_line_length` | `int` | `0` | Wrap lines exceeding this length. `0` disables. |
+| `disabled` | `bool` | `False` | Return source unchanged. |
+| `editorconfig` | `bool` | `False` | Load settings from `.editorconfig`. |
+
+### CSS-specific options
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `selector_separator_newline` | `bool` | `True` | Print each selector in a grouped rule on its own line. |
+| `newline_between_rules` | `bool` | `True` | Insert an empty line between CSS rules. |
+| `brace_style` | `str` | `"collapse"` | Brace placement: `"collapse"` or `"expand"`. |
+| `space_around_combinator` | `bool` | `False` | Print spaces around combinators (`div > p`). |
+
+<Note>
+  The `space_around_selector_separator` attribute is deprecated. Use `space_around_combinator` instead.
+</Note>
+
+## Usage examples
+
+<CodeGroup>
+
+```python basic
+import cssbeautifier
+
+result = cssbeautifier.beautify('body{margin:0;padding:0;}h1{color:red;}')
+print(result)
+# body {
+#     margin: 0;
+#     padding: 0;
+# }
+#
+# h1 {
+#     color: red;
+# }
+```
+
+```python with options
+import cssbeautifier
+
+opts = cssbeautifier.default_options()
+opts.indent_size = 2
+opts.brace_style = 'expand'
+opts.selector_separator_newline = True
+opts.newline_between_rules = True
+opts.space_around_combinator = True
+
+result = cssbeautifier.beautify('div>p{color:red;} h1,h2{margin:0}', opts)
+print(result)
+# div > p
+# {
+#   color: red;
+# }
+#
+# h1,
+# h2
+# {
+#   margin: 0;
+# }
+```
+
+```python from file
+import cssbeautifier
+
+opts = cssbeautifier.default_options()
+opts.indent_size = 2
+opts.end_with_newline = True
+
+result = cssbeautifier.beautify_file('styles.css', opts)
+print(result)
+```
+
+```python selector separator off
+import cssbeautifier
+
+opts = cssbeautifier.default_options()
+opts.selector_separator_newline = False
+
+result = cssbeautifier.beautify('h1,h2,h3{font-weight:bold;}')
+# h1, h2, h3 {
+#     font-weight: bold;
+# }
+```
+
+</CodeGroup>
+
+## Inline directives
+
+The `ignore` directive is supported. The `preserve` directive is not supported in CSS.
+
+```css
+.formatted {
+    color: red;
+}
+/* beautify ignore:start */
+.raw{color:blue;margin:0}
+/* beautify ignore:end */
+```

@@ -1,0 +1,288 @@
+---
+title: 'Node.js library'
+description: 'Use js-beautify as a Node.js library to beautify JavaScript, CSS, and HTML programmatically.'
+---
+
+The `js-beautify` npm package exposes all three beautifiers — JavaScript, CSS, and HTML — as a Node.js library. Every method accepts a source string and an options object, and returns the beautified string.
+
+## Installation
+
+```bash
+npm install js-beautify
+```
+
+## Importing the library
+
+<CodeGroup>
+
+```javascript CommonJS
+// The default export is the JS beautifier.
+// .css and .html are available as named properties.
+var beautify    = require('js-beautify');
+var beautifyCSS  = require('js-beautify').css;
+var beautifyHTML = require('js-beautify').html;
+```
+
+```javascript ESM
+// 'beautify' can be any name here.
+import beautify from 'js-beautify';
+
+// Access each language via methods on the default export.
+beautify.js(source, options);
+beautify.css(source, options);
+beautify.html(source, options);
+```
+
+</CodeGroup>
+
+<Note>
+In CommonJS, `require('js-beautify')` and `require('js-beautify').js` return the same JS beautifier function. For CSS and HTML you must reference the `.css` or `.html` property explicitly.
+</Note>
+
+## Function signatures
+
+All three beautifiers share the same signature:
+
+```javascript
+beautify(source, options)  // → string
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `source` | `string` | The source code to beautify. |
+| `options` | `object` | Optional settings object. Keys use underscores (e.g. `indent_size`). |
+
+The function always returns a string.
+
+## Legacy aliases
+
+Three legacy aliases exist for backward compatibility:
+
+```javascript
+var beautify = require('js-beautify');
+
+// These are all equivalent to beautify.js:
+beautify.js_beautify(source, options);
+
+// These are all equivalent to beautify.css:
+beautify.css_beautify(source, options);
+
+// These are all equivalent to beautify.html:
+beautify.html_beautify(source, options);
+```
+
+## Beautifying JavaScript
+
+<Steps>
+  <Step title="Require the library">
+    ```javascript
+    var beautify = require('js-beautify');
+    ```
+  </Step>
+  <Step title="Call the beautifier">
+    ```javascript
+    var ugly = 'function foo(a,b){return a+b;}';
+    var pretty = beautify(ugly, { indent_size: 2 });
+    console.log(pretty);
+    // function foo(a, b) {
+    //   return a + b;
+    // }
+    ```
+  </Step>
+</Steps>
+
+## Beautifying CSS
+
+```javascript
+var beautifyCSS = require('js-beautify').css;
+
+var ugly = 'div{color:red;font-size:14px;}';
+var pretty = beautifyCSS(ugly, { indent_size: 2 });
+console.log(pretty);
+// div {
+//   color: red;
+//   font-size: 14px;
+// }
+```
+
+## Beautifying HTML
+
+```javascript
+var beautifyHTML = require('js-beautify').html;
+
+var ugly = '<div><p>Hello</p></div>';
+var pretty = beautifyHTML(ugly, { indent_size: 2 });
+console.log(pretty);
+// <div>
+//   <p>Hello</p>
+// </div>
+```
+
+## Beautifying JSON
+
+The JS beautifier handles JSON natively — pass a JSON string and it will be formatted correctly:
+
+```javascript
+var beautify = require('js-beautify');
+
+var dataObj = { completed: false, id: 1, title: 'delectus aut autem', userId: 1 };
+var dataJson = JSON.stringify(dataObj);
+
+var pretty = beautify(dataJson, { indent_size: 2, space_in_empty_paren: true });
+console.log(pretty);
+// {
+//   "completed": false,
+//   "id": 1,
+//   "title": "delectus aut autem",
+//   "userId": 1,
+// }
+```
+
+## Reading and writing files
+
+A common pattern is to read a file, beautify its contents, and write the result back:
+
+```javascript
+var beautify = require('js-beautify').js;
+var fs = require('fs');
+
+fs.readFile('foo.js', 'utf8', function(err, data) {
+  if (err) {
+    throw err;
+  }
+  var pretty = beautify(data, { indent_size: 2, space_in_empty_paren: true });
+  fs.writeFile('foo.js', pretty, 'utf8', function(err) {
+    if (err) throw err;
+    console.log('foo.js has been beautified.');
+  });
+});
+```
+
+With `async`/`await` and `fs.promises`:
+
+```javascript
+import beautify from 'js-beautify';
+import { readFile, writeFile } from 'fs/promises';
+
+async function beautifyFile(path) {
+  const source = await readFile(path, 'utf8');
+  const pretty = beautify.js(source, { indent_size: 2 });
+  await writeFile(path, pretty, 'utf8');
+}
+
+beautifyFile('foo.js');
+```
+
+## Options
+
+Option keys use underscores and match the CLI flag names (dashes become underscores). For example, `--indent-size 2 --space-in-empty-paren` becomes:
+
+```javascript
+{ indent_size: 2, space_in_empty_paren: true }
+```
+
+<AccordionGroup>
+  <Accordion title="JavaScript options">
+    | Option | Default | Description |
+    |--------|---------|-------------|
+    | `indent_size` | `4` | Number of spaces per indent level. |
+    | `indent_char` | `" "` | Character used for indentation. |
+    | `indent_with_tabs` | `false` | Indent with tabs instead of spaces. |
+    | `eol` | `"\n"` | End-of-line character(s). |
+    | `end_with_newline` | `false` | Ensure output ends with a newline. |
+    | `preserve_newlines` | `true` | Preserve existing blank lines. |
+    | `max_preserve_newlines` | `10` | Maximum blank lines to preserve in one chunk. |
+    | `brace_style` | `"collapse"` | `collapse`, `expand`, `end-expand`, or `none`, optionally with `,preserve-inline`. |
+    | `space_in_paren` | `false` | Add padding spaces inside parentheses: `f( a, b )`. |
+    | `space_in_empty_paren` | `false` | Add a space inside empty parentheses: `f( )`. |
+    | `jslint_happy` | `false` | Enable jslint-stricter mode. |
+    | `space_after_anon_function` | `false` | Add a space before anonymous function parens: `function ()`. |
+    | `space_after_named_function` | `false` | Add a space before named function parens: `function foo ()`. |
+    | `keep_array_indentation` | `false` | Preserve array literal indentation. |
+    | `unindent_chained_methods` | `false` | Do not indent chained method calls. |
+    | `break_chained_methods` | `false` | Break chained method calls across lines. |
+    | `unescape_strings` | `false` | Decode printable characters encoded in `\xNN` notation. |
+    | `wrap_line_length` | `0` | Wrap lines exceeding this length (0 = disabled). |
+    | `comma_first` | `false` | Put commas at the beginning of new lines. |
+    | `operator_position` | `"before-newline"` | Operator position: `before-newline`, `after-newline`, or `preserve-newline`. |
+    | `indent_empty_lines` | `false` | Keep indentation on otherwise empty lines. |
+    | `e4x` | `false` | Pass E4X XML literals through untouched. |
+    | `eval_code` | `false` | Evaluate code if a JS interpreter is available (security risk). |
+    | `space_before_conditional` | `true` | Add a space before conditional expressions. |
+    | `templating` | `["auto"]` | Templating languages to support: `auto`, `django`, `erb`, `handlebars`, `php`, `smarty`, `angular`. |
+  </Accordion>
+  <Accordion title="CSS options">
+    | Option | Default | Description |
+    |--------|---------|-------------|
+    | `indent_size` | `4` | Number of spaces per indent level. |
+    | `indent_char` | `" "` | Character used for indentation. |
+    | `indent_with_tabs` | `false` | Indent with tabs instead of spaces. |
+    | `eol` | `"\n"` | End-of-line character(s). |
+    | `end_with_newline` | `false` | Ensure output ends with a newline. |
+    | `brace_style` | `"collapse"` | `collapse` or `expand`. |
+    | `selector_separator_newline` | `true` | Add a newline between multiple selectors. |
+    | `newline_between_rules` | `true` | Add a newline between CSS rules. |
+    | `indent_empty_lines` | `false` | Keep indentation on otherwise empty lines. |
+  </Accordion>
+  <Accordion title="HTML options">
+    | Option | Default | Description |
+    |--------|---------|-------------|
+    | `indent_size` | `4` | Number of spaces per indent level. |
+    | `indent_char` | `" "` | Character used for indentation. |
+    | `indent_with_tabs` | `false` | Indent with tabs instead of spaces. |
+    | `eol` | `"\n"` | End-of-line character(s). |
+    | `end_with_newline` | `false` | Ensure output ends with a newline. |
+    | `preserve_newlines` | `true` | Preserve existing blank lines. |
+    | `max_preserve_newlines` | `10` | Maximum blank lines to preserve in one chunk. |
+    | `indent_inner_html` | `false` | Indent `<head>` and `<body>` contents. |
+    | `brace_style` | `"collapse"` | `collapse-preserve-inline`, `collapse`, `expand`, `end-expand`, or `none`. |
+    | `indent_scripts` | `"normal"` | How to indent script tag contents: `keep`, `separate`, or `normal`. |
+    | `wrap_line_length` | `250` | Wrap lines exceeding this length (0 = disabled). |
+    | `wrap_attributes` | `"auto"` | Attribute wrapping: `auto`, `force`, `force-aligned`, `force-expand-multiline`, `aligned-multiple`, `preserve`, or `preserve-aligned`. |
+    | `unformatted` | inline tags | Tags whose content should not be reformatted. |
+    | `content_unformatted` | `["pre"]` | Tags whose content should remain entirely as-is. |
+    | `extra_liners` | `["head","body","/html"]` | Tags that get an extra newline before them. |
+    | `templating` | `["auto"]` | Templating languages: `auto`, `none`, `django`, `erb`, `handlebars`, `php`, `smarty`, `angular`. |
+  </Accordion>
+</AccordionGroup>
+
+## Language-specific option overrides
+
+You can supply a settings tree with language-specific sub-objects. Nested settings override the top-level values for that language:
+
+```javascript
+var beautifyHTML = require('js-beautify').html;
+
+var pretty = beautifyHTML(source, {
+  indent_size: 4,
+  end_with_newline: true,
+  js: {
+    indent_size: 2
+  },
+  css: {
+    indent_size: 2
+  }
+});
+```
+
+In this example, JavaScript and CSS embedded inside HTML will use a 2-space indent, while the HTML itself uses 4 spaces.
+
+## Loading settings from `.jsbeautifyrc`
+
+When running in Node.js, the library automatically searches for a `.jsbeautifyrc` file at or above the current working directory. Options in that file are merged with any options passed directly to the function. Options passed directly take precedence.
+
+```json .jsbeautifyrc
+{
+  "indent_size": 2,
+  "end_with_newline": true,
+  "html": {
+    "indent_inner_html": true
+  }
+}
+```
+
+You can also set options via `jsbeautify_`-prefixed environment variables:
+
+```bash
+JSBEAUTIFY_INDENT_SIZE=2 node your-script.js
+```

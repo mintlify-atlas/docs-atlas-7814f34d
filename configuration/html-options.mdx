@@ -1,0 +1,315 @@
+---
+title: HTML options
+description: Complete reference for all js-beautify HTML formatting options, including defaults and accepted values.
+---
+
+These options control how the HTML beautifier formats markup. Pass them via the CLI (using `--kebab-case` flags), as an options object with `beautify.html()`, or inside a `.jsbeautifyrc` file under the `"html"` key.
+
+## Indentation
+
+<AccordionGroup>
+  <Accordion title="indent_size" defaultOpen={false}>
+    **CLI:** `--indent-size`, `-s` &nbsp; **Default:** `4`
+
+    Number of spaces per indentation level. Ignored when `indent_with_tabs` is `true`.
+  </Accordion>
+
+  <Accordion title="indent_char" defaultOpen={false}>
+    **CLI:** `--indent-char`, `-c` &nbsp; **Default:** `" "` (space)
+
+    Character used for each level of indentation.
+  </Accordion>
+
+  <Accordion title="indent_with_tabs" defaultOpen={false}>
+    **CLI:** `--indent-with-tabs`, `-t` &nbsp; **Default:** `false`
+
+    When `true`, uses a tab character for indentation and overrides `indent_size` and `indent_char`.
+  </Accordion>
+
+  <Accordion title="indent_inner_html" defaultOpen={false}>
+    **CLI:** `--indent-inner-html`, `-I` &nbsp; **Default:** `false`
+
+    When `true`, indents the content of `<head>` and `<body>` elements.
+
+    ```html
+    <!-- indent_inner_html: false (default) -->
+    <html>
+    <head>
+    <title>My page</title>
+    </head>
+    <body>
+    <p>Hello</p>
+    </body>
+    </html>
+
+    <!-- indent_inner_html: true -->
+    <html>
+      <head>
+        <title>My page</title>
+      </head>
+      <body>
+        <p>Hello</p>
+      </body>
+    </html>
+    ```
+  </Accordion>
+
+  <Accordion title="indent_empty_lines" defaultOpen={false}>
+    **CLI:** `--indent-empty-lines` &nbsp; **Default:** `false`
+
+    When `true`, empty lines retain their indentation whitespace.
+  </Accordion>
+</AccordionGroup>
+
+## Line endings
+
+<AccordionGroup>
+  <Accordion title="eol" defaultOpen={false}>
+    **CLI:** `--eol`, `-e` &nbsp; **Default:** `"\n"`
+
+    Character sequence used for line endings. Common values: `"\n"` (LF), `"\r\n"` (CRLF).
+  </Accordion>
+
+  <Accordion title="end_with_newline" defaultOpen={false}>
+    **CLI:** `--end-with-newline`, `-n` &nbsp; **Default:** `false`
+
+    When `true`, ensures the output ends with a single newline character.
+  </Accordion>
+</AccordionGroup>
+
+## Newline preservation
+
+<AccordionGroup>
+  <Accordion title="preserve_newlines" defaultOpen={false}>
+    **CLI:** `--preserve-newlines`, `-p` &nbsp; **Default:** `true`
+
+    When `true`, blank lines from the source are kept in the output.
+  </Accordion>
+
+  <Accordion title="max_preserve_newlines" defaultOpen={false}>
+    **CLI:** `--max-preserve-newlines`, `-m` &nbsp; **Default:** `10`
+
+    Maximum number of consecutive blank lines to preserve. Ignored when `preserve_newlines` is `false`.
+  </Accordion>
+</AccordionGroup>
+
+## Brace style
+
+<Accordion title="brace_style" defaultOpen={false}>
+  **CLI:** `--brace-style`, `-b` &nbsp; **Default:** `"collapse"`
+
+  Controls brace placement for inline script and style blocks within HTML. Accepts the same values as the JavaScript beautifier.
+
+  | Value | Description |
+  |---|---|
+  | `collapse-preserve-inline` | Collapse braces and keep single-line blocks on one line |
+  | `collapse` | Opening brace on same line as statement (default) |
+  | `expand` | Opening brace on its own line |
+  | `end-expand` | Opening brace on same line; closing brace on its own line |
+  | `none` | Leave brace style unchanged |
+</Accordion>
+
+## Script indentation
+
+<Accordion title="indent_scripts" defaultOpen={false}>
+  **CLI:** `--indent-scripts`, `-S` &nbsp; **Default:** `"normal"`
+
+  Controls the indentation level of code inside `<script>` tags.
+
+  | Value | Description |
+  |---|---|
+  | `normal` | Script content is indented one level inside the tag (default) |
+  | `keep` | Script content keeps the indentation of the surrounding HTML |
+  | `separate` | Script content is not indented relative to the tag |
+
+  ```html
+  <!-- indent_scripts: "normal" (default) -->
+  <script>
+      function init() {
+          console.log('ready');
+      }
+  </script>
+
+  <!-- indent_scripts: "keep" -->
+  <script>
+  function init() {
+      console.log('ready');
+  }
+  </script>
+  ```
+</Accordion>
+
+## Line wrapping
+
+<Accordion title="wrap_line_length" defaultOpen={false}>
+  **CLI:** `--wrap-line-length`, `-w` &nbsp; **Default:** `250`
+
+  Maximum number of characters per line. Set to `0` to disable wrapping. HTML defaults to `250`, unlike the JavaScript beautifier which defaults to `0`.
+</Accordion>
+
+## Attribute wrapping
+
+<AccordionGroup>
+  <Accordion title="wrap_attributes" defaultOpen={false}>
+    **CLI:** `--wrap-attributes`, `-A` &nbsp; **Default:** `"auto"`
+
+    Controls how attributes are wrapped when a tag has multiple attributes.
+
+    | Value | Description |
+    |---|---|
+    | `auto` | Wrap only when `wrap_line_length` is exceeded (default) |
+    | `force` | Wrap all attributes except the first |
+    | `force-aligned` | Wrap and align all attributes after the first |
+    | `force-expand-multiline` | Wrap all attributes, each on its own line |
+    | `aligned-multiple` | Wrap to fit within `wrap_line_length`, aligning attributes |
+    | `preserve` | Keep existing wrapping as-is |
+    | `preserve-aligned` | Keep existing wrapping and align attributes |
+
+    ```html
+    <!-- wrap_attributes: "force-expand-multiline" -->
+    <input
+        type="text"
+        id="name"
+        class="form-control"
+        placeholder="Enter name"
+    />
+    ```
+  </Accordion>
+
+  <Accordion title="wrap_attributes_min_attrs" defaultOpen={false}>
+    **CLI:** `--wrap-attributes-min-attrs`, `-M` &nbsp; **Default:** `2`
+
+    Minimum number of attributes on a tag before forced wrapping takes effect. Only applies when `wrap_attributes` is set to a `force` variant.
+  </Accordion>
+
+  <Accordion title="wrap_attributes_indent_size" defaultOpen={false}>
+    **CLI:** `--wrap-attributes-indent-size`, `-i` &nbsp; **Default:** same as `indent_size`
+
+    Number of spaces to indent wrapped attributes. Ignored when `wrap_attributes` is `"aligned"` or one of the aligned variants.
+  </Accordion>
+</AccordionGroup>
+
+## Inline elements
+
+<AccordionGroup>
+  <Accordion title="inline" defaultOpen={false}>
+    **CLI:** `--inline`, `-d` &nbsp; **Default:** standard HTML inline elements
+
+    List of tag names to treat as inline elements. Inline elements do not cause a line break before or after them. The default list includes all standard HTML inline elements: `a`, `abbr`, `b`, `br`, `button`, `cite`, `code`, `em`, `i`, `img`, `input`, `kbd`, `label`, `map`, `output`, `q`, `s`, `samp`, `select`, `small`, `span`, `strong`, `sub`, `sup`, `textarea`, `time`, `u`, `var`, and others.
+
+    Pass additional tags as a comma-separated string on the CLI:
+
+    ```bash
+    html-beautify --inline span,custom-tag index.html
+    ```
+  </Accordion>
+
+  <Accordion title="inline_custom_elements" defaultOpen={false}>
+    **CLI:** `--inline-custom-elements` &nbsp; **Default:** `true`
+
+    When `true`, custom elements (tags containing a hyphen, such as `<my-component>`) are treated as inline elements.
+  </Accordion>
+</AccordionGroup>
+
+## Unformatted content
+
+<AccordionGroup>
+  <Accordion title="unformatted" defaultOpen={false}>
+    **CLI:** `--unformatted`, `-U` &nbsp; **Default:** `[]`
+
+    List of tag names whose opening tag, content, and closing tag are all left exactly as-is. The beautifier will not reformat anything inside these tags.
+
+    ```json
+    { "unformatted": ["script", "style"] }
+    ```
+  </Accordion>
+
+  <Accordion title="content_unformatted" defaultOpen={false}>
+    **CLI:** `--content-unformatted`, `-T` &nbsp; **Default:** `["pre", "textarea"]`
+
+    List of tag names whose inner content is preserved exactly as-is, while the opening and closing tags themselves are still formatted.
+
+    ```html
+    <!-- content_unformatted: ["pre"] -->
+    <pre>
+    line one
+      line two
+        line three
+    </pre>
+    ```
+  </Accordion>
+
+  <Accordion title="unformatted_content_delimiter" defaultOpen={false}>
+    **CLI:** `--unformatted-content-delimiter` &nbsp; **Default:** `""`
+
+    When set, content between two occurrences of this delimiter string is preserved verbatim. Useful for template syntax that the beautifier cannot parse.
+  </Accordion>
+</AccordionGroup>
+
+## Extra newlines
+
+<Accordion title="extra_liners" defaultOpen={false}>
+  **CLI:** `--extra-liners`, `-E` &nbsp; **Default:** `["head", "body", "/html"]`
+
+  List of tag names that should be preceded by an extra blank line. By default, `<head>`, `<body>`, and `</html>` each get an extra blank line before them.
+
+  ```json
+  { "extra_liners": ["head", "body", "/html"] }
+  ```
+
+  Set to an empty array to disable extra newlines:
+
+  ```json
+  { "extra_liners": [] }
+  ```
+</Accordion>
+
+## Templating languages
+
+<Accordion title="templating" defaultOpen={false}>
+  **CLI:** `--templating` &nbsp; **Default:** `["auto"]`
+
+  List of templating languages whose syntax should be preserved when formatting HTML. Accepted values: `auto`, `none`, `angular`, `django`, `erb`, `handlebars`, `php`, `smarty`.
+
+  When set to `auto`, all supported template languages are recognized inside HTML files (unlike in JavaScript where `auto` means none).
+
+  ```json
+  { "templating": ["handlebars"] }
+  ```
+</Accordion>
+
+## EditorConfig
+
+<Accordion title="editorconfig" defaultOpen={false}>
+  **CLI:** `--editorconfig` &nbsp; **Default:** `false`
+
+  When `true`, reads indentation and newline settings from the nearest `.editorconfig` file. See the [EditorConfig page](/configuration/editorconfig) for supported properties.
+</Accordion>
+
+## Quick reference
+
+| Option | CLI flag | Default |
+|---|---|---|
+| `indent_size` | `--indent-size` | `4` |
+| `indent_char` | `--indent-char` | `" "` |
+| `indent_with_tabs` | `--indent-with-tabs` | `false` |
+| `eol` | `--eol` | `"\n"` |
+| `end_with_newline` | `--end-with-newline` | `false` |
+| `preserve_newlines` | `--preserve-newlines` | `true` |
+| `max_preserve_newlines` | `--max-preserve-newlines` | `10` |
+| `indent_inner_html` | `--indent-inner-html` | `false` |
+| `indent_scripts` | `--indent-scripts` | `"normal"` |
+| `brace_style` | `--brace-style` | `"collapse"` |
+| `wrap_line_length` | `--wrap-line-length` | `250` |
+| `wrap_attributes` | `--wrap-attributes` | `"auto"` |
+| `wrap_attributes_min_attrs` | `--wrap-attributes-min-attrs` | `2` |
+| `wrap_attributes_indent_size` | `--wrap-attributes-indent-size` | `indent_size` |
+| `inline` | `--inline` | standard inline elements |
+| `inline_custom_elements` | `--inline-custom-elements` | `true` |
+| `unformatted` | `--unformatted` | `[]` |
+| `content_unformatted` | `--content-unformatted` | `["pre", "textarea"]` |
+| `unformatted_content_delimiter` | `--unformatted-content-delimiter` | `""` |
+| `extra_liners` | `--extra-liners` | `["head", "body", "/html"]` |
+| `indent_empty_lines` | `--indent-empty-lines` | `false` |
+| `templating` | `--templating` | `["auto"]` |
+| `editorconfig` | `--editorconfig` | `false` |

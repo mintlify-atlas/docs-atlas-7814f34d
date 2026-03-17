@@ -1,0 +1,184 @@
+---
+title: "Node.js installation"
+description: "Install js-beautify for Node.js as a global CLI tool or a local library, including ESM and CommonJS usage."
+---
+
+The `js-beautify` npm package provides both a command-line interface and a programmatic API for beautifying JavaScript, CSS, and HTML. It requires **Node.js 14 or later**.
+
+## Global install (CLI usage)
+
+Installing globally adds three executables to your PATH: `js-beautify`, `css-beautify`, and `html-beautify`.
+
+<CodeGroup>
+
+```bash npm
+npm install -g js-beautify
+```
+
+```bash yarn
+yarn global add js-beautify
+```
+
+```bash pnpm
+pnpm add -g js-beautify
+```
+
+</CodeGroup>
+
+Verify the install:
+
+```bash
+js-beautify --version
+```
+
+Run the CLI on a file:
+
+```bash
+js-beautify foo.js
+css-beautify styles.css
+html-beautify index.html
+```
+
+Beautified output goes to stdout by default. To write back to the original file, use `--replace` (`-r`):
+
+```bash
+js-beautify --replace foo.js
+```
+
+<Tip>
+  `js-beautify --css` and `js-beautify --html` are aliases for `css-beautify` and `html-beautify` respectively.
+</Tip>
+
+## Local install (library usage)
+
+Install locally when you want to use `js-beautify` as a dependency in your project:
+
+<CodeGroup>
+
+```bash npm
+npm install js-beautify
+```
+
+```bash yarn
+yarn add js-beautify
+```
+
+```bash pnpm
+pnpm add js-beautify
+```
+
+</CodeGroup>
+
+## Beta / next versions
+
+To install the latest pre-release (beta or release candidate):
+
+<CodeGroup>
+
+```bash npm
+npm install js-beautify@next
+```
+
+```bash yarn
+yarn add js-beautify@next
+```
+
+```bash pnpm
+pnpm add js-beautify@next
+```
+
+</CodeGroup>
+
+<Warning>
+  The `@next` tag tracks the latest pre-release build. It may contain breaking changes or unfinished features. Use it to test upcoming releases, not in production.
+</Warning>
+
+## CommonJS usage
+
+After a local install, require the package in your Node.js code. All three beautifiers are available as named exports:
+
+```javascript
+const beautify = require('js-beautify');
+
+// Beautify JavaScript (default export is also js)
+const jsResult = beautify('function foo(){return 1;}', { indent_size: 2 });
+
+// Beautify CSS
+const cssResult = beautify.css('body{margin:0;padding:0;}', { indent_size: 2 });
+
+// Beautify HTML
+const htmlResult = beautify.html('<html><body><p>Hi</p></body></html>', { indent_size: 2 });
+
+console.log(jsResult);
+// function foo() {
+//   return 1;
+// }
+```
+
+You can also import individual beautifiers using the subpath export:
+
+```javascript
+var beautify_js   = require('js-beautify');           // default is js
+var beautify_js2  = require('js-beautify').js;        // same as above
+var beautify_css  = require('js-beautify').css;
+var beautify_html = require('js-beautify').html;
+```
+
+All three functions share the same signature:
+
+```javascript
+beautify(code, options)
+```
+
+- `code` — the string of source code to beautify
+- `options` — an object of formatting options (optional)
+
+## ESM import syntax
+
+If your project uses ES modules (`"type": "module"` in `package.json` or `.mjs` files), import the default export:
+
+```javascript
+import beautify from 'js-beautify';
+
+const jsResult   = beautify.js('function foo(){return 1;}', { indent_size: 2 });
+const cssResult  = beautify.css('body{margin:0;}', { indent_size: 2 });
+const htmlResult = beautify.html('<p>Hello</p>', { indent_size: 2 });
+
+console.log(jsResult);
+// function foo() {
+//   return 1;
+// }
+```
+
+## Full working example
+
+The example below reads a file from disk and writes prettified output using all three beautifiers:
+
+```javascript
+import beautify from 'js-beautify';
+import { readFileSync } from 'fs';
+
+const options = { indent_size: 2, end_with_newline: true };
+
+// JavaScript
+const jsCode = readFileSync('app.js', 'utf8');
+console.log(beautify.js(jsCode, options));
+
+// CSS
+const cssCode = readFileSync('styles.css', 'utf8');
+console.log(beautify.css(cssCode, options));
+
+// HTML
+const htmlCode = readFileSync('index.html', 'utf8');
+console.log(beautify.html(htmlCode, options));
+```
+
+<Note>
+  Option names use underscores in the API (e.g. `indent_size`) and dashes on the CLI (e.g. `--indent-size`). They are otherwise identical.
+</Note>
+
+## Next steps
+
+- [Configuration overview](/configuration/overview) — explore all available options
+- [Node.js library usage](/usage/node-library) — detailed API reference and examples
+- [CLI usage](/usage/cli-javascript) — all CLI flags and config file loading

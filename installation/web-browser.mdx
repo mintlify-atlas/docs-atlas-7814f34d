@@ -1,0 +1,152 @@
+---
+title: "Web browser / CDN usage"
+description: "Add JS Beautify to any web page via CDN script tags and call js_beautify, css_beautify, and html_beautify from your JavaScript."
+---
+
+JS Beautify ships pre-built browser bundles hosted on [cdnjs](https://cdnjs.com/libraries/js-beautify). No build step or package manager required — add a `<script>` tag and you are ready to go.
+
+## Available bundles
+
+There are three separate scripts, one per language:
+
+| Script file | Global variable | What it beautifies |
+|---|---|---|
+| `beautify.js` | `js_beautify` | JavaScript |
+| `beautify-css.js` | `css_beautify` | CSS |
+| `beautify-html.js` | `html_beautify` | HTML (requires the JS and CSS bundles too) |
+
+Each script is available in a standard and a minified (`.min.js`) variant.
+
+## CDN script tags
+
+Replace `1.15.4` with the version you want to pin (see [version pinning](#version-pinning)).
+
+### Standard (non-minified)
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-css.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-html.js"></script>
+```
+
+### Minified
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-html.min.js"></script>
+```
+
+<Tip>
+  Use the minified variants in production to reduce page load time. Use the non-minified variants during development when you need readable stack traces.
+</Tip>
+
+## Global variables
+
+Each script tag exposes a global function on the `window` object:
+
+- `js_beautify(code, options)` — beautifies JavaScript
+- `css_beautify(code, options)` — beautifies CSS
+- `html_beautify(code, options)` — beautifies HTML
+
+All three functions share the same signature: the first argument is the source string, and the second is an optional options object.
+
+## Full working HTML page example
+
+The example below loads all three bundles, then beautifies JavaScript, CSS, and HTML strings and prints the results to the browser console:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>JS Beautify demo</title>
+  </head>
+  <body>
+    <h1>Open the browser console to see output.</h1>
+
+    <!-- Load JS Beautify from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify-html.min.js"></script>
+
+    <script>
+      const options = { indent_size: 2 };
+
+      // Beautify JavaScript
+      const uglyJs = 'function greet(name){return "Hello, "+name;}';
+      console.log(js_beautify(uglyJs, options));
+      // function greet(name) {
+      //   return "Hello, " + name;
+      // }
+
+      // Beautify CSS
+      const uglyCss = 'body{margin:0;padding:0;}.container{display:flex;}';
+      console.log(css_beautify(uglyCss, options));
+      // body {
+      //   margin: 0;
+      //   padding: 0;
+      // }
+
+      // Beautify HTML
+      const uglyHtml = '<html><head><title>Hi</title></head><body><p>Hello</p></body></html>';
+      console.log(html_beautify(uglyHtml, options));
+      // <html>
+      //   <head>
+      //     <title>Hi</title>
+      //   </head>
+      //   <body>
+      //     <p>Hello</p>
+      //   </body>
+      // </html>
+    </script>
+  </body>
+</html>
+```
+
+## Beautifying JSON
+
+Because JSON is valid JavaScript, you can use `js_beautify` to pretty-print JSON objects:
+
+```javascript
+const options = { indent_size: 2 };
+
+const dataObj = { completed: false, id: 1, title: 'delectus aut autem', userId: 1 };
+const dataJson = JSON.stringify(dataObj);
+
+console.log(js_beautify(dataJson, options));
+// {
+//   "completed": false,
+//   "id": 1,
+//   "title": "delectus aut autem",
+//   "userId": 1
+// }
+```
+
+## Version pinning
+
+The CDN URLs above include the exact version number (`1.15.4`). Always pin to a specific version in production:
+
+- **Pinned** (recommended for production): `.../js-beautify/1.15.4/beautify.min.js`
+- Older versions remain available on cdnjs by changing the version segment in the URL.
+
+<Warning>
+  Avoid using unpinned or "latest" CDN URLs. CDN services offer no uptime or support guarantees, and an unexpected version change could break your page.
+</Warning>
+
+<Note>
+  You can browse all available versions at [cdnjs.com/libraries/js-beautify](https://cdnjs.com/libraries/js-beautify).
+</Note>
+
+## Loading only what you need
+
+You do not have to load all three scripts. Load only the bundles you need:
+
+- To beautify JavaScript only, include `beautify.js` (or `beautify.min.js`).
+- To beautify CSS only, include `beautify-css.js`.
+- To beautify HTML, include all three — the HTML beautifier delegates to the JS and CSS beautifiers internally.
+
+## Next steps
+
+- [Web library usage](/usage/web-library) — detailed API reference for the browser globals
+- [Configuration overview](/configuration/overview) — all formatting options available in the browser

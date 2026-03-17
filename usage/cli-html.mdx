@@ -1,0 +1,296 @@
+---
+title: 'CLI usage: HTML'
+description: 'Beautify HTML files from the command line using html-beautify or js-beautify --html.'
+---
+
+The `html-beautify` CLI reformats HTML files. It shares the same underlying tool as `js-beautify` — the two commands are equivalent:
+
+```bash
+html-beautify page.html
+# same as:
+js-beautify --html page.html
+```
+
+Output goes to stdout by default.
+
+## Installation
+
+```bash
+npm install -g js-beautify
+```
+
+Installing `js-beautify` globally provides the `js-beautify`, `css-beautify`, and `html-beautify` executables.
+
+## Basic usage
+
+```bash
+html-beautify page.html
+```
+
+To write to a file:
+
+```bash
+html-beautify page.html -o page.out.html
+```
+
+To modify in-place:
+
+```bash
+html-beautify -r page.html
+```
+
+## CLI flags reference
+
+### Control flags
+
+| Flag | Long form | Description |
+|------|-----------|-------------|
+| `-f` | `--file` | Input file(s). Pass `-` for stdin. |
+| `-r` | `--replace` | Write output in-place, replacing input. |
+| `-o` | `--outfile` | Write output to a specific file (default: stdout). |
+| | `--config` | Path to a config file. |
+| `-q` | `--quiet` | Suppress logging to stdout. |
+| `-h` | `--help` | Show help. |
+| `-v` | `--version` | Show the version. |
+
+### Indentation
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-s` | `--indent-size` | Number of spaces per indentation level. | `4` |
+| `-c` | `--indent-char` | Character used for indentation. | `" "` |
+| `-t` | `--indent-with-tabs` | Indent with tabs. Overrides `-s` and `-c`. | `false` |
+| `-I` | `--indent-inner-html` | Indent `<head>` and `<body>` sections. | `false` |
+| | `--indent-empty-lines` | Keep indentation on empty lines. | `false` |
+
+### Line endings and newlines
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-e` | `--eol` | Line terminator character(s). | `\n` |
+| `-n` | `--end-with-newline` | End output with a newline. | `false` |
+| `-p` | `--preserve-newlines` | Preserve existing line breaks. Use `--no-preserve-newlines` to disable. | `true` |
+| `-m` | `--max-preserve-newlines` | Maximum number of line breaks to preserve in one chunk. | `10` |
+
+### Wrapping
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-w` | `--wrap-line-length` | Wrap lines exceeding N characters. `0` disables. | `250` |
+| `-A` | `--wrap-attributes` | How to wrap HTML tag attributes. Values: `auto`, `force`, `force-aligned`, `force-expand-multiline`, `aligned-multiple`, `preserve`, `preserve-aligned`. | `auto` |
+| `-M` | `--wrap-attributes-min-attrs` | Minimum number of attributes to trigger force-wrap modes. | `2` |
+| `-i` | `--wrap-attributes-indent-size` | Indent size for wrapped attributes. Ignored when `wrap-attributes` is `aligned`. | Same as `--indent-size` |
+
+### Inline elements and unformatted content
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-d` | `--inline` | List of tags treated as inline elements. | Standard inline tags |
+| | `--inline_custom_elements` | Treat custom elements as inline. | `true` |
+| `-U` | `--unformatted` | List of tags whose entire content is left unformatted. | Inline tags |
+| `-T` | `--content_unformatted` | List of tags whose text content is not reformatted. | `pre` |
+| | `--unformatted_content_delimiter` | Treat content between this string as unformatted. | `""` |
+
+### Scripts and extra lines
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| `-S` | `--indent-scripts` | Indentation level inside `<script>` tags: `normal`, `keep`, `separate`. | `normal` |
+| | `--indent_scripts` | Alias for `--indent-scripts`. |
+| `-E` | `--extra_liners` | Tags that get an extra blank line before them. | `head`, `body`, `/html` |
+| `-b` | `--brace-style` | Brace style for inline scripts: `collapse`, `expand`, `end-expand`, `none`, `collapse-preserve-inline`. | `collapse` |
+
+### Editor and template support
+
+| Flag | Long form | Description | Default |
+|------|-----------|-------------|--------|
+| | `--editorconfig` | Read settings from an `.editorconfig` file. | `false` |
+| | `--templating` | Templating languages to pass through: `auto`, `none`, `angular`, `django`, `erb`, `handlebars`, `php`, `smarty`. | `auto` (= all except angular in HTML) |
+
+## Practical examples
+
+<CodeGroup>
+
+```bash Beautify a file to stdout
+html-beautify page.html
+```
+
+```bash Write to a new file
+html-beautify page.html -o page.formatted.html
+```
+
+```bash Modify in-place
+html-beautify -r page.html
+```
+
+```bash 2-space indent, end with newline
+html-beautify -s 2 -n page.html
+```
+
+```bash Indent with tabs, indent inner HTML
+html-beautify -t -I page.html
+```
+
+```bash Wrap attributes (force each on its own line)
+html-beautify -A force page.html
+```
+
+```bash Read from stdin
+cat page.html | html-beautify -
+```
+
+```bash Use js-beautify alias
+js-beautify --html page.html
+```
+
+```bash Use EditorConfig settings
+html-beautify --editorconfig page.html
+```
+
+</CodeGroup>
+
+## Wrapping attributes
+
+The `-A` / `--wrap-attributes` flag controls how tag attributes are arranged when they don't fit on one line.
+
+<AccordionGroup>
+  <Accordion title="auto (default)">
+    Attributes stay on the same line unless the line is too long.
+
+    ```html
+    <input type="text" id="name" class="form-control" placeholder="Enter name">
+    ```
+  </Accordion>
+  <Accordion title="force">
+    Each attribute after the first is placed on its own line.
+
+    ```html
+    <input type="text"
+        id="name"
+        class="form-control"
+        placeholder="Enter name">
+    ```
+  </Accordion>
+  <Accordion title="force-aligned">
+    Attributes after the first are placed on their own lines and aligned with the first attribute.
+
+    ```html
+    <input type="text"
+           id="name"
+           class="form-control"
+           placeholder="Enter name">
+    ```
+  </Accordion>
+  <Accordion title="force-expand-multiline">
+    Each attribute is placed on its own line, including the first. The closing `>` appears on a new line.
+
+    ```html
+    <input
+        type="text"
+        id="name"
+        class="form-control"
+        placeholder="Enter name"
+    >
+    ```
+  </Accordion>
+  <Accordion title="aligned-multiple">
+    Attributes are aligned in multiple columns where possible.
+
+    ```html
+    <input type="text" id="name"
+           class="form-control" placeholder="Enter name">
+    ```
+  </Accordion>
+  <Accordion title="preserve">
+    Existing attribute formatting is preserved.
+  </Accordion>
+  <Accordion title="preserve-aligned">
+    Existing attribute formatting is preserved and attributes are aligned.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+Use `-M` to set the minimum number of attributes before force-wrapping kicks in. By default, wrap only activates when there are 2 or more attributes.
+</Tip>
+
+## Script indentation
+
+The `-S` / `--indent-scripts` flag controls how content inside `<script>` tags is indented:
+
+<Tabs>
+  <Tab title="normal (default)">
+    Script content is indented relative to the `<script>` tag.
+
+    ```html
+    <script>
+        function foo() {
+            return 1;
+        }
+    </script>
+    ```
+  </Tab>
+  <Tab title="keep">
+    Script content keeps its existing indentation.
+
+    ```html
+    <script>
+    function foo() {
+        return 1;
+    }
+    </script>
+    ```
+  </Tab>
+  <Tab title="separate">
+    Script content is not indented (starts at column 0).
+
+    ```html
+    <script>
+function foo() {
+    return 1;
+}
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Configuration
+
+HTML beautification respects the same configuration chain as the JS beautifier. Create a `.jsbeautifyrc` file and add an `html` section for HTML-specific settings:
+
+```json .jsbeautifyrc
+{
+    "indent_size": 4,
+    "html": {
+        "end_with_newline": true,
+        "indent_inner_html": true,
+        "wrap_line_length": 120,
+        "wrap_attributes": "force-aligned",
+        "js": {
+            "indent_size": 2
+        },
+        "css": {
+            "indent_size": 2
+        }
+    }
+}
+```
+
+<Note>
+The `html-beautify` and `js-beautify --html` commands are identical. Both read from `.jsbeautifyrc` and support the `jsbeautify_` environment variable prefix.
+</Note>
+
+## Templating language support
+
+The `--templating` flag lets you pass template syntax through the beautifier without mangling it. You can specify a comma-separated list or multiple flags:
+
+```bash
+html-beautify --templating django,handlebars page.html
+```
+
+Supported values: `auto`, `none`, `angular`, `django`, `erb`, `handlebars`, `php`, `smarty`.
+
+The default `auto` mode enables all templating languages except `angular` in HTML files.
+
+<Warning>
+The `--templating` flag tells the beautifier which template syntax to leave intact — it does not validate or render templates.
+</Warning>

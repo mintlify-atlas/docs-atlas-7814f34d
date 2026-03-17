@@ -1,0 +1,110 @@
+---
+title: "JS Beautify"
+description: "A JavaScript, CSS, and HTML code beautifier for Node.js, Python, and the browser."
+---
+
+<img
+  src="https://raw.githubusercontent.com/beautifier/js-beautify/7db71fc/web/wordmark-light.svg"
+  alt="JS Beautifier"
+  style={{ height: "120px", marginBottom: "2rem" }}
+/>
+
+JS Beautify reformats and re-indents messy JavaScript, CSS, and HTML. It also unpacks scripts packed by Dean Edwards' popular packer, and partially deobfuscates scripts processed by [javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator).
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get up and running in under 5 minutes with your first beautified file.
+  </Card>
+  <Card title="Install for Node.js" icon="node-js" href="/installation/nodejs">
+    Install via npm and use as a library or CLI tool.
+  </Card>
+  <Card title="Install for Python" icon="python" href="/installation/python">
+    Install via pip and use `jsbeautifier` or `cssbeautifier`.
+  </Card>
+  <Card title="Use in the Browser" icon="browser" href="/installation/web-browser">
+    Load from CDN and beautify code directly in your web pages.
+  </Card>
+</CardGroup>
+
+## What can you beautify?
+
+JS Beautify handles three languages, each with its own set of formatting options:
+
+<CardGroup cols={3}>
+  <Card title="JavaScript" icon="square-js">
+    Reformats JS with configurable indentation, brace style, operator positioning, and more.
+  </Card>
+  <Card title="CSS" icon="css3">
+    Cleans up stylesheets with consistent indentation and rule separation.
+  </Card>
+  <Card title="HTML" icon="html5">
+    Formats HTML with control over indentation, attribute wrapping, and inline elements.
+  </Card>
+</CardGroup>
+
+## Multiple ways to use it
+
+<Tabs>
+  <Tab title="Node.js CLI">
+    ```bash
+    npm install -g js-beautify
+    js-beautify foo.js
+    css-beautify styles.css
+    html-beautify index.html
+    ```
+  </Tab>
+  <Tab title="Node.js Library">
+    ```js
+    const beautify = require('js-beautify');
+
+    const result = beautify.js('function foo(){return 1;}', { indent_size: 2 });
+    console.log(result);
+    // function foo() {
+    //   return 1;
+    // }
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import jsbeautifier
+
+    res = jsbeautifier.beautify('function foo(){return 1;}')
+    print(res)
+    # function foo() {
+    #     return 1;
+    # }
+    ```
+  </Tab>
+  <Tab title="Browser">
+    ```html
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.4/beautify.min.js"></script>
+    <script>
+      const result = js_beautify('function foo(){return 1;}', { indent_size: 2 });
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Key features
+
+- **Highly configurable** — dozens of options for indentation, brace style, line wrapping, operator position, and more
+- **`.jsbeautifyrc` support** — define project-level config in a JSON file at any level of the filesystem
+- **EditorConfig integration** — automatically reads `.editorconfig` files to unify formatting
+- **Language-specific overrides** — set different indent sizes for JS inside HTML vs standalone JS files
+- **Formatting directives** — use `/* beautify ignore:start */` and `/* beautify preserve:start */` in source comments
+- **Template language support** — Django, ERB, Handlebars, PHP, Smarty, and Angular
+- **Unpacks packed scripts** — decodes Dean Edwards' packer and partially deobfuscates minified code
+
+## Project info
+
+| Detail | Value |
+|--------|-------|
+| Version | 1.15.4 |
+| License | MIT |
+| npm package | `js-beautify` |
+| PyPI packages | `jsbeautifier`, `cssbeautifier` |
+| Node.js requirement | ≥ 14 |
+
+<Note>
+  Try it live at [beautifier.io](https://beautifier.io/) — no installation required.
+</Note>
